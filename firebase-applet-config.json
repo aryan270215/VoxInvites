@@ -1,0 +1,10 @@
+{
+  "projectId": "vox-invites",
+  "appId": "1:95988291587:web:8334898446cc4584c6d636",
+  "apiKey": "AIzaSyBJK6yItmYlJ_usNOZ0ZZ29ZdLCvmD8uoc",
+  "authDomain": "vox-invites.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "vox-invites.firebasestorage.app",
+  "messagingSenderId": "95988291587",
+  "measurementId": "G-YR1MGYNC8R"
+}

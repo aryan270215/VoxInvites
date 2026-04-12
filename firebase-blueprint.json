@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "Invitation": {
+      "title": "Invitation",
+      "description": "A wedding invitation website data",
+      "type": "object",
+      "properties": {
+        "creatorId": { "type": "string" },
+        "brideName": { "type": "string" },
+        "groomName": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "venue": { "type": "string" },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "time": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "imageUrls": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "musicUrl": { "type": "string" },
+        "story": { "type": "string" },
+        "theme": { "type": "string" },
+        "pin": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["creatorId", "brideName", "groomName", "date", "venue", "theme", "createdAt"]
+    },
+    "RSVP": {
+      "title": "RSVP",
+      "description": "RSVP for a wedding invitation",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "attending": { "type": "boolean" },
+        "guests": { "type": "number" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "attending", "guests", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/invitations/{inviteId}": {
+      "schema": { "$ref": "#/entities/Invitation" },
+      "description": "Stores wedding invitations"
+    },
+    "/invitations/{inviteId}/rsvps/{rsvpId}": {
+      "schema": { "$ref": "#/entities/RSVP" },
+      "description": "Stores RSVPs for a specific invitation"
+    }
+  }
+}
