@@ -31,6 +31,7 @@ export default function Invite() {
   const ytIframeRef = useRef<HTMLIFrameElement>(null);
   const [isYoutube, setIsYoutube] = useState(false);
   const [ytId, setYtId] = useState('');
+  const [isExpired, setIsExpired] = useState(false);
 
   // RSVP State
   const [rsvpForm, setRsvpForm] = useState({ name: '', attending: true, guests: 1, message: '' });
@@ -75,12 +76,31 @@ export default function Invite() {
     const fetchInvite = async () => {
       if (!id) return;
 
+      const checkExpiration = (data: any) => {
+        let latestDate = new Date(data.date).getTime();
+        if (data.events && Array.isArray(data.events)) {
+          data.events.forEach((ev: any) => {
+            if (ev.time) {
+              const evTime = new Date(ev.time).getTime();
+              if (evTime > latestDate) {
+                latestDate = evTime;
+              }
+            }
+          });
+        }
+        const expirationTime = latestDate + 2 * 24 * 60 * 60 * 1000; // 2 days after latest event
+        if (Date.now() > expirationTime) {
+          setIsExpired(true);
+        }
+      };
+
       if (id.startsWith('demo-')) {
         const demoId = id.replace('demo-', '');
         const template = templates.find(t => t.id === demoId);
         if (template && template.demoData) {
           const data = { ...template.demoData, id, creatorId: 'demo-creator' };
           setInvite(data);
+          checkExpiration(data);
           setUnlocked(true);
           setLoading(false);
           
@@ -104,6 +124,7 @@ export default function Invite() {
           const data = docSnap.data();
           
           setInvite(data);
+          checkExpiration(data);
           if (!data.pin) setUnlocked(true);
           if (data.musicUrl) {
             const ytMatch = data.musicUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
@@ -190,6 +211,23 @@ export default function Invite() {
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div></div>;
   if (!invite) return <div className="min-h-screen flex items-center justify-center text-2xl font-serif">Invitation not found</div>;
 
+  if (isExpired) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-100 px-4">
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Calendar className="w-8 h-8 text-stone-500" />
+          </div>
+          <h2 className="text-2xl font-serif font-bold text-stone-900 mb-2">Event Ended</h2>
+          <p className="text-stone-600 mb-6">This invitation has expired as the event dates have passed.</p>
+          <Link to="/" className="inline-block px-6 py-3 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors">
+            Create Your Own Invite
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
+
   if (!unlocked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-100 px-4">
@@ -240,7 +278,15 @@ export default function Invite() {
     elegant: { bg: 'bg-zinc-50', text: 'text-zinc-900', accent: 'text-zinc-500', card: 'bg-white border border-zinc-200 shadow-sm', font: 'font-serif tracking-wide', button: 'bg-zinc-900 hover:bg-zinc-800 text-white', border: 'border-zinc-200' },
     cyberpunk: { bg: 'bg-zinc-950', text: 'text-cyan-400', accent: 'text-fuchsia-500', card: 'bg-zinc-900 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]', font: 'font-mono tracking-tight', button: 'bg-cyan-600 hover:bg-cyan-500 text-zinc-950 font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)]', border: 'border-cyan-500/30' },
     confetti: { bg: 'bg-pink-50', text: 'text-purple-900', accent: 'text-pink-500', card: 'bg-white border-2 border-pink-200 shadow-xl rounded-3xl', font: 'font-sans font-medium', button: 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg', border: 'border-pink-200' },
-    corporate: { bg: 'bg-slate-50', text: 'text-slate-900', accent: 'text-blue-600', card: 'bg-white border border-slate-200 shadow-md rounded-none', font: 'font-sans', button: 'bg-blue-600 hover:bg-blue-700 text-white rounded-none', border: 'border-slate-200' }
+    corporate: { bg: 'bg-slate-50', text: 'text-slate-900', accent: 'text-blue-600', card: 'bg-white border border-slate-200 shadow-md rounded-none', font: 'font-sans', button: 'bg-blue-600 hover:bg-blue-700 text-white rounded-none', border: 'border-slate-200' },
+    boho: { bg: 'bg-[#fdfbf7]', text: 'text-[#5c4a3d]', accent: 'text-[#c28e6e]', card: 'bg-[#faf6f0] border border-[#e8dcc7] shadow-sm', font: 'font-serif', button: 'bg-[#c28e6e] hover:bg-[#a87b5f] text-white', border: 'border-[#e8dcc7]' },
+    artdeco: { bg: 'bg-[#1a1a1a]', text: 'text-[#d4af37]', accent: 'text-[#f3e5ab]', card: 'bg-[#242424] border-2 border-[#d4af37] shadow-[0_0_15px_rgba(212,175,55,0.2)]', font: 'font-sans uppercase tracking-widest', button: 'bg-[#d4af37] hover:bg-[#b5952f] text-[#1a1a1a] font-bold', border: 'border-[#d4af37]' },
+    watercolor: { bg: 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50', text: 'text-slate-700', accent: 'text-purple-500', card: 'bg-white/60 backdrop-blur-sm border border-white shadow-lg', font: 'font-serif', button: 'bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white', border: 'border-purple-100' },
+    rustic: { bg: 'bg-[#f4f1ea]', text: 'text-[#4a4036]', accent: 'text-[#6b5e51]', card: 'bg-[#fffdfa] border border-[#d1c7bd] shadow-md', font: 'font-serif', button: 'bg-[#5c5042] hover:bg-[#42392f] text-white', border: 'border-[#d1c7bd]' },
+    gothic: { bg: 'bg-black', text: 'text-gray-300', accent: 'text-red-800', card: 'bg-zinc-900 border border-red-900/50 shadow-2xl', font: 'font-serif', button: 'bg-red-900 hover:bg-red-800 text-gray-200', border: 'border-red-900/50' },
+    tropical: { bg: 'bg-emerald-50', text: 'text-emerald-900', accent: 'text-pink-500', card: 'bg-white border border-emerald-200 shadow-xl', font: 'font-sans', button: 'bg-pink-500 hover:bg-pink-600 text-white', border: 'border-emerald-200' },
+    fairytale: { bg: 'bg-indigo-50', text: 'text-indigo-900', accent: 'text-purple-500', card: 'bg-white/80 border border-indigo-100 shadow-xl rounded-3xl', font: 'font-serif', button: 'bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-200', border: 'border-indigo-100' },
+    retro: { bg: 'bg-[#fdf6e3]', text: 'text-[#cb4b16]', accent: 'text-[#2aa198]', card: 'bg-[#eee8d5] border-4 border-[#cb4b16] shadow-[8px_8px_0px_0px_rgba(203,75,22,1)]', font: 'font-mono', button: 'bg-[#2aa198] hover:bg-[#268bd2] text-[#fdf6e3] font-bold border-2 border-[#2aa198]', border: 'border-[#cb4b16]' }
   };
   const themeStyles = themeStylesMap[invite.theme as keyof typeof themeStylesMap] || themeStylesMap.modern;
 
@@ -265,9 +311,13 @@ export default function Invite() {
             animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
             onClick={handleOpen}
-            className={`px-8 py-4 rounded-full font-medium text-white shadow-xl ${themeStyles.button}`}
+            className={`group relative px-10 py-5 rounded-full font-medium text-white shadow-2xl overflow-hidden ${themeStyles.button}`}
           >
-            Tap to Open
+            <div className="absolute inset-0 bg-white/10 group-hover:bg-white/0 transition-colors duration-300"></div>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+            <span className="relative flex items-center gap-3 text-lg tracking-wide">
+              Tap to Open <Heart className="w-5 h-5 animate-pulse" />
+            </span>
           </motion.button>
         </motion.div>
         

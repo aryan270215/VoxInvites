@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { handleFirestoreError, OperationType } from '../utils/firestoreError';
 import { Plus, Trash2, Loader2, UploadCloud } from 'lucide-react';
@@ -24,6 +24,7 @@ export default function Create() {
       if (template?.demoData) {
         const demoData = template.demoData as any;
         return {
+          customId: '',
           eventType: demoData.eventType || 'wedding',
           introGreeting: demoData.introGreeting || '',
           primaryName: demoData.primaryName || '',
@@ -40,6 +41,7 @@ export default function Create() {
       }
     }
     return {
+      customId: '',
       eventType: searchParams.get('type') || 'wedding',
       introGreeting: '',
       primaryName: '',
@@ -184,9 +186,33 @@ export default function Create() {
         return;
       }
 
-      const docRef = await addDoc(collection(db, 'invitations'), inviteData);
+      let inviteId = '';
+      if (formData.customId) {
+        // Validate custom ID format
+        const customIdRegex = /^[a-z0-9-]+$/;
+        if (!customIdRegex.test(formData.customId)) {
+          alert("Custom URL ID can only contain lowercase letters, numbers, and hyphens.");
+          setLoading(false);
+          return;
+        }
+
+        // Check if custom ID already exists
+        const docRef = doc(db, 'invitations', formData.customId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          alert("This Custom URL ID is already taken. Please choose another one.");
+          setLoading(false);
+          return;
+        }
+
+        await setDoc(docRef, inviteData);
+        inviteId = formData.customId;
+      } else {
+        const docRef = await addDoc(collection(db, 'invitations'), inviteData);
+        inviteId = docRef.id;
+      }
       
-      navigate(`/invite/${docRef.id}`);
+      navigate(`/invite/${inviteId}`);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'invitations');
     } finally {
@@ -338,6 +364,22 @@ export default function Create() {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-stone-800 border-b pb-2">Settings</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-stone-700 mb-1">Custom URL ID (Optional)</label>
+                <div className="flex items-center">
+                  <span className="bg-stone-100 border border-r-0 border-stone-300 rounded-l-lg px-3 py-2 text-stone-500 text-sm">
+                    {window.location.origin}/invite/
+                  </span>
+                  <input 
+                    type="text" 
+                    placeholder="e.g., john-and-jane-wedding" 
+                    className="flex-1 px-4 py-2 rounded-r-lg border border-stone-300 focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none" 
+                    value={formData.customId} 
+                    onChange={e => setFormData({...formData, customId: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')})} 
+                  />
+                </div>
+                <p className="text-xs text-stone-500 mt-1">Create a memorable link. Only lowercase letters, numbers, and hyphens allowed.</p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-stone-700 mb-1">Theme *</label>
                 <select className="w-full px-4 py-2 rounded-lg border border-stone-300 focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none" value={formData.theme} onChange={e => setFormData({...formData, theme: e.target.value})}>
@@ -355,6 +397,14 @@ export default function Create() {
                   <option value="cyberpunk">Cyberpunk</option>
                   <option value="confetti">Confetti Pop</option>
                   <option value="corporate">Corporate Pro</option>
+                  <option value="boho">Boho Chic</option>
+                  <option value="artdeco">Art Deco / Gatsby</option>
+                  <option value="watercolor">Watercolor / Pastel</option>
+                  <option value="rustic">Rustic Charm</option>
+                  <option value="gothic">Dark Romance / Gothic</option>
+                  <option value="tropical">Tropical Vibes</option>
+                  <option value="fairytale">Enchanted Fairytale</option>
+                  <option value="retro">Retro 70s/80s</option>
                 </select>
               </div>
               <div>

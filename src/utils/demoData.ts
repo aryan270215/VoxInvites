@@ -148,5 +148,101 @@ export const templates = [
       imageUrls: ['https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=800&auto=format&fit=crop', 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800&auto=format&fit=crop'],
       events: [{ name: 'Beach Ceremony', time: '2026-05-28T16:30', description: 'Followed by a seafood dinner reception.' }]
     }
+  },
+  { 
+    id: '13', type: 'wedding', theme: 'boho', title: 'Boho Chic', desc: 'Earthy, warm, and relaxed.', color: 'bg-[#fdfbf7]',
+    demoData: {
+      eventType: 'wedding', theme: 'boho',
+      primaryName: 'Willow', secondaryName: 'Rowan',
+      date: '2026-08-14T15:00', venue: 'The Desert Oasis, Joshua Tree',
+      introGreeting: 'Celebrate the union of',
+      story: 'Under the open sky and surrounded by nature, we are exchanging our vows. Join us for a weekend of love, music, and desert magic.',
+      imageUrls: ['https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=800&auto=format&fit=crop', 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'Ceremony & Festival', time: '2026-08-14T15:00', description: 'Vows at 3 PM, followed by live music and food trucks.' }]
+    }
+  },
+  { 
+    id: '14', type: 'company_party', theme: 'artdeco', title: 'Gatsby Gala', desc: 'Geometric, gold, and luxurious.', color: 'bg-[#1a1a1a]',
+    demoData: {
+      eventType: 'company_party', theme: 'artdeco',
+      primaryName: 'Sterling', secondaryName: 'Co.',
+      date: '2026-12-31T20:00', venue: 'The Grand Ballroom',
+      introGreeting: 'You are invited to the',
+      story: 'Step back into the roaring twenties for an evening of opulence and celebration as we ring in the new year.',
+      imageUrls: ['https://images.unsplash.com/photo-1566737236500-c8ac43014a67?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'New Year\'s Eve Gala', time: '2026-12-31T20:00', description: 'Black tie required. Champagne toast at midnight.' }]
+    }
+  },
+  { 
+    id: '15', type: 'baby_shower', theme: 'watercolor', title: 'Pastel Dreams', desc: 'Soft, artistic, and pastel.', color: 'bg-gradient-to-br from-blue-50 to-pink-50',
+    demoData: {
+      eventType: 'baby_shower', theme: 'watercolor',
+      primaryName: 'Baby', secondaryName: 'Smith',
+      date: '2026-03-10T13:00', venue: 'The Botanical Gardens',
+      introGreeting: 'Join us to shower',
+      story: 'We are overjoyed to welcome our little one soon! Please join us for a lovely afternoon of tea, treats, and celebration.',
+      imageUrls: ['https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'Baby Shower', time: '2026-03-10T13:00', description: 'Afternoon tea and games.' }]
+    }
+  },
+  { 
+    id: '16', type: 'wedding', theme: 'rustic', title: 'Rustic Charm', desc: 'Woodsy, warm, and country.', color: 'bg-[#f4f1ea]',
+    demoData: {
+      eventType: 'wedding', theme: 'rustic',
+      primaryName: 'Harper', secondaryName: 'Mason',
+      date: '2026-10-22T16:00', venue: 'Whispering Pines Barn',
+      introGreeting: 'Together with their families',
+      story: 'We\'re getting hitched! Join us for a rustic celebration filled with love, laughter, and a whole lot of dancing.',
+      imageUrls: ['https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800&auto=format&fit=crop', 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'Barn Wedding', time: '2026-10-22T16:00', description: 'Ceremony outdoors, reception inside the barn.' }]
+    }
+  },
+  { 
+    id: '17', type: 'engagement', theme: 'gothic', title: 'Dark Romance', desc: 'Dark, romantic, and moody.', color: 'bg-black',
+    demoData: {
+      eventType: 'engagement', theme: 'gothic',
+      primaryName: 'Raven', secondaryName: 'Lucius',
+      date: '2026-10-31T19:00', venue: 'The Old Manor',
+      introGreeting: 'Join us for an evening of',
+      story: 'A love written in the stars. We invite you to celebrate our engagement on All Hallows\' Eve.',
+      imageUrls: ['https://images.unsplash.com/photo-1505934333218-8fe21ff87e69?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'Engagement Soirée', time: '2026-10-31T19:00', description: 'Cocktails and dark elegance.' }]
+    }
+  },
+  { 
+    id: '18', type: 'birthday', theme: 'tropical', title: 'Tropical Vibes', desc: 'Bright, leafy, and vibrant.', color: 'bg-emerald-50',
+    demoData: {
+      eventType: 'birthday', theme: 'tropical',
+      primaryName: 'Leo', secondaryName: '',
+      date: '2026-07-15T14:00', venue: 'The Tiki Lounge',
+      introGreeting: 'Get ready to luau for',
+      story: 'Leo is turning 30! Grab your favorite Hawaiian shirt and join us for a tropical bash with fruity drinks and good vibes.',
+      imageUrls: ['https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'Leo\'s 30th Luau', time: '2026-07-15T14:00', description: 'Pool party and BBQ.' }]
+    }
+  },
+  { 
+    id: '19', type: 'wedding', theme: 'fairytale', title: 'Enchanted Forest', desc: 'Magical, soft, and enchanting.', color: 'bg-indigo-50',
+    demoData: {
+      eventType: 'wedding', theme: 'fairytale',
+      primaryName: 'Aurora', secondaryName: 'Phillip',
+      date: '2026-05-10T15:00', venue: 'The Enchanted Gardens',
+      introGreeting: 'Once upon a time...',
+      story: 'Our fairytale is just beginning. We request the honor of your presence as we say "I do" surrounded by magic and nature.',
+      imageUrls: ['https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'The Royal Wedding', time: '2026-05-10T15:00', description: 'A magical ceremony followed by a grand ball.' }]
+    }
+  },
+  { 
+    id: '20', type: 'birthday', theme: 'retro', title: 'Retro Roller', desc: '70s/80s vibe, funky colors.', color: 'bg-[#fdf6e3]',
+    demoData: {
+      eventType: 'birthday', theme: 'retro',
+      primaryName: 'Max', secondaryName: '',
+      date: '2026-08-20T18:00', venue: 'Starlight Roller Rink',
+      introGreeting: 'Let\'s groove tonight for',
+      story: 'Dust off your skates and neon leg warmers! We are celebrating Max\'s birthday with a totally tubular roller disco.',
+      imageUrls: ['https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop'],
+      events: [{ name: 'Roller Disco Party', time: '2026-08-20T18:00', description: 'Skating, pizza, and arcade games.' }]
+    }
   }
 ];

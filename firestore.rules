@@ -57,7 +57,7 @@ service cloud.firestore {
              (!('mapUrl' in data) || (data.mapUrl is string && data.mapUrl.size() < 1000)) &&
              data.date is string && data.date.size() > 0 && data.date.size() < 100 &&
              data.venue is string && data.venue.size() > 0 && data.venue.size() < 500 &&
-             data.theme is string && data.theme in ['royal', 'modern', 'minimal', 'botanical', 'ocean', 'midnight', 'sunset', 'glassmorphism', 'neon', 'vintage', 'elegant', 'cyberpunk', 'confetti', 'corporate'] &&
+             data.theme is string && data.theme in ['royal', 'modern', 'minimal', 'botanical', 'ocean', 'midnight', 'sunset', 'glassmorphism', 'neon', 'vintage', 'elegant', 'cyberpunk', 'confetti', 'corporate', 'boho', 'artdeco', 'watercolor', 'rustic', 'gothic', 'tropical', 'fairytale', 'retro'] &&
              data.createdAt is timestamp &&
              (!('pin' in data) || (data.pin is string && data.pin.size() <= 10)) &&
              (!('adminPin' in data) || (data.adminPin is string && data.adminPin.size() <= 10)) &&
