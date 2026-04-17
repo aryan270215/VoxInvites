@@ -3,10 +3,15 @@ export const templates = [
     id: '1', type: 'wedding', theme: 'royal', title: 'Royal Wedding', desc: 'Elegant and traditional with rich colors.', color: 'bg-gradient-to-br from-amber-200 to-amber-500',
     demoData: {
       eventType: 'wedding', theme: 'royal',
-      primaryName: 'Aarav', secondaryName: 'Priya',
+      primaryName: 'Ankita', secondaryName: 'Mohit',
+      primaryParents: 'D/o Anil Kumar Jha & Anita Jha',
+      secondaryParents: 'S/o Rama Shankar Rai & Suman Rai',
+      introImageUrl: 'https://images.unsplash.com/photo-1543886546-0b8ac1e1d670?q=80&w=800&auto=format&fit=crop',
+      primaryPhotoUrl: 'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=600&auto=format&fit=crop',
+      secondaryPhotoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=600&auto=format&fit=crop',
       date: '2026-12-15T18:00', venue: 'The Taj Mahal Palace, Mumbai',
-      introGreeting: 'Together with their families',
-      story: 'Our journey began 5 years ago, and every moment since has been magical. We are thrilled to invite you to celebrate the beginning of our forever.',
+      introGreeting: 'Shree Ganeshay Namah',
+      story: 'With the heartfelt blessings of our families, we invite you to join us in celebrating the joyous union of our beloved. Our journey began 5 years ago, and every moment since has been magical.',
       imageUrls: ['https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop', 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800&auto=format&fit=crop', 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=800&auto=format&fit=crop'],
       events: [
         { name: 'Wedding Ceremony', time: '2026-12-15T18:00', description: 'Traditional ceremony under the stars.' },

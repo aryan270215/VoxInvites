@@ -29,6 +29,8 @@ export default function Create() {
           introGreeting: demoData.introGreeting || '',
           primaryName: demoData.primaryName || '',
           secondaryName: demoData.secondaryName || '',
+          primaryParents: demoData.primaryParents || '',
+          secondaryParents: demoData.secondaryParents || '',
           date: demoData.date || '',
           venue: demoData.venue || '',
           mapUrl: demoData.mapUrl || '',
@@ -46,6 +48,8 @@ export default function Create() {
       introGreeting: '',
       primaryName: '',
       secondaryName: '',
+      primaryParents: '',
+      secondaryParents: '',
       date: '',
       venue: '',
       mapUrl: '',
@@ -78,6 +82,40 @@ export default function Create() {
     }
     return [];
   });
+  
+  const [introImageUrl, setIntroImageUrl] = useState<string>(() => {
+    const demoId = searchParams.get('demo');
+    if (demoId) {
+      const template = templates.find(t => t.id === demoId);
+      if (template?.demoData?.introImageUrl) {
+        return template.demoData.introImageUrl;
+      }
+    }
+    return '';
+  });
+
+  const [primaryPhotoUrl, setPrimaryPhotoUrl] = useState<string>(() => {
+    const demoId = searchParams.get('demo');
+    if (demoId) {
+      const template = templates.find(t => t.id === demoId);
+      if (template?.demoData?.primaryPhotoUrl) {
+        return template.demoData.primaryPhotoUrl;
+      }
+    }
+    return '';
+  });
+
+  const [secondaryPhotoUrl, setSecondaryPhotoUrl] = useState<string>(() => {
+    const demoId = searchParams.get('demo');
+    if (demoId) {
+      const template = templates.find(t => t.id === demoId);
+      if (template?.demoData?.secondaryPhotoUrl) {
+        return template.demoData.secondaryPhotoUrl;
+      }
+    }
+    return '';
+  });
+
   const [uploadingImages, setUploadingImages] = useState(false);
 
   const compressImage = (file: File): Promise<string> => {
@@ -138,6 +176,22 @@ export default function Create() {
     }
   };
 
+  const handleSingleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingImages(true);
+    try {
+      const base64 = await compressImage(files[0]);
+      setter(base64);
+    } catch (error) {
+      console.error("Error reading image:", error);
+      alert("Failed to read image.");
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
@@ -163,6 +217,8 @@ export default function Create() {
         introGreeting: formData.introGreeting,
         primaryName: formData.primaryName,
         secondaryName: formData.secondaryName,
+        primaryParents: formData.primaryParents,
+        secondaryParents: formData.secondaryParents,
         brideName: formData.primaryName, // For backward compatibility
         groomName: formData.secondaryName, // For backward compatibility
         date: formData.date,
@@ -175,6 +231,9 @@ export default function Create() {
         adminPin: formData.adminPin,
         events: validEvents,
         imageUrls: validImages, // Stored directly in Firestore as Base64
+        introImageUrl,
+        primaryPhotoUrl,
+        secondaryPhotoUrl,
         createdAt: serverTimestamp(),
       };
 
@@ -255,6 +314,17 @@ export default function Create() {
                    'Partner 1 Name *'}
                 </label>
                 <input required type="text" className="w-full px-4 py-2 rounded-lg border border-stone-300 focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none" value={formData.primaryName} onChange={e => setFormData({...formData, primaryName: e.target.value})} />
+                
+                {(formData.eventType === 'wedding' || formData.eventType === 'engagement') && (
+                  <div className="mt-2 text-sm space-y-2">
+                    <input type="text" placeholder="Partner 1's Parents (e.g. S/o Mr & Mrs...)" className="w-full px-3 py-1.5 rounded-lg border border-stone-300 outline-none text-xs" value={formData.primaryParents} onChange={e => setFormData({...formData, primaryParents: e.target.value})} />
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1">Partner 1 Photo (Optional)</label>
+                      <input type="file" accept="image/*" onChange={(e) => handleSingleImageUpload(e, setPrimaryPhotoUrl)} className="text-xs" />
+                      {primaryPhotoUrl && <span className="text-xs text-green-600 ml-2">✓ Uploaded</span>}
+                    </div>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-stone-700 mb-1">
@@ -265,6 +335,26 @@ export default function Create() {
                    'Partner 2 Name *'}
                 </label>
                 <input type="text" required={formData.eventType === 'wedding' || formData.eventType === 'engagement'} className="w-full px-4 py-2 rounded-lg border border-stone-300 focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none" value={formData.secondaryName} onChange={e => setFormData({...formData, secondaryName: e.target.value})} />
+
+                {(formData.eventType === 'wedding' || formData.eventType === 'engagement') && (
+                  <div className="mt-2 text-sm space-y-2">
+                    <input type="text" placeholder="Partner 2's Parents (e.g. D/o Mr & Mrs...)" className="w-full px-3 py-1.5 rounded-lg border border-stone-300 outline-none text-xs" value={formData.secondaryParents} onChange={e => setFormData({...formData, secondaryParents: e.target.value})} />
+                    <div>
+                      <label className="block text-xs font-medium text-stone-600 mb-1">Partner 2 Photo (Optional)</label>
+                      <input type="file" accept="image/*" onChange={(e) => handleSingleImageUpload(e, setSecondaryPhotoUrl)} className="text-xs" />
+                      {secondaryPhotoUrl && <span className="text-xs text-green-600 ml-2">✓ Uploaded</span>}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="md:col-span-2 mt-4 pt-4 border-t border-stone-100">
+                <label className="block text-sm font-medium text-stone-700 mb-1">Full-Screen Intro Background Image (Optional)</label>
+                <p className="text-xs text-stone-500 mb-2">Upload a beautiful vertical photo of the couple/host to be shown on the 'Tap to Open' screen.</p>
+                <div className="flex items-center gap-4">
+                  <input type="file" accept="image/*" onChange={(e) => handleSingleImageUpload(e, setIntroImageUrl)} className="text-sm" />
+                  {introImageUrl && <span className="text-sm text-green-600 font-medium">✓ Uploaded successfully</span>}
+                </div>
               </div>
             </div>
             <div>

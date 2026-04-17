@@ -291,6 +291,63 @@ export default function Invite() {
   const themeStyles = themeStylesMap[invite.theme as keyof typeof themeStylesMap] || themeStylesMap.modern;
 
   if (!isOpened) {
+    if (invite.introImageUrl) {
+      return (
+        <div className={`min-h-screen flex flex-col items-center justify-between relative ${themeStyles.font} text-white`}>
+          <div 
+            className="absolute inset-0 z-0" 
+            style={{ 
+              backgroundImage: `url(${invite.introImageUrl})`, 
+              backgroundSize: 'cover', 
+              backgroundPosition: 'center',
+              filter: 'brightness(0.7)'
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 z-0"></div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className="text-center z-10 px-4 pt-16 w-full"
+          >
+            {invite.introGreeting && (
+              <p className="text-xl md:text-2xl mb-4 font-medium tracking-wider">{invite.introGreeting}</p>
+            )}
+            <h1 className="text-5xl md:text-7xl font-serif font-bold mb-4 drop-shadow-lg">
+              {invite.primaryName || invite.brideName} {(invite.secondaryName || invite.groomName) && <><br/><span className="text-3xl font-light italic">&</span><br/> {invite.secondaryName || invite.groomName}</>}
+            </h1>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.3 }}
+            className="text-center z-10 px-4 pb-20 w-full flex flex-col items-center"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              onClick={handleOpen}
+              className="group relative flex items-center justify-center w-24 h-24 rounded-full bg-white/20 backdrop-blur-md border border-white/40 shadow-2xl overflow-hidden mb-8"
+            >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-white/30 rounded-full"></div>
+              <span className="relative flex flex-col items-center justify-center gap-1 text-white font-medium text-sm tracking-widest uppercase">
+                Tap to <br/> Open
+              </span>
+            </motion.button>
+            <div className="text-lg font-medium tracking-widest uppercase">
+              {new Date(invite.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+            <div className="opacity-60 text-xs font-medium tracking-wide mt-6">
+              Made With ❤️ By VoxInvites
+            </div>
+          </motion.div>
+        </div>
+      );
+    }
+
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center relative ${themeStyles.bg} ${themeStyles.text} ${themeStyles.font}`}>
         <motion.div 
@@ -406,6 +463,55 @@ export default function Invite() {
           )}
         </motion.div>
       </section>
+
+      {/* Two Hearts, One Journey (Couple Photos) */}
+      {(invite.primaryPhotoUrl || invite.secondaryPhotoUrl) && (invite.eventType === 'wedding' || invite.eventType === 'engagement') && (
+        <section className="py-20 px-4 max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-serif tracking-widest uppercase mb-16 opacity-80">
+            Two Hearts, One Journey
+          </h2>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+            {invite.primaryPhotoUrl && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className={`flex flex-col items-center ${themeStyles.card} shadow-xl p-4 pb-8 rounded-xl w-full max-w-sm`}
+              >
+                <div className="w-full aspect-[4/5] overflow-hidden rounded-lg mb-6">
+                  <img src={invite.primaryPhotoUrl} alt={invite.primaryName} className="w-full h-full object-cover" />
+                </div>
+                <h3 className="text-3xl font-serif font-bold mb-2">{invite.primaryName}</h3>
+                {invite.primaryParents && (
+                  <p className="text-sm opacity-70 italic">{invite.primaryParents}</p>
+                )}
+              </motion.div>
+            )}
+
+            {invite.primaryPhotoUrl && invite.secondaryPhotoUrl && (
+              <div className="text-5xl font-light italic opacity-60 font-serif">&</div>
+            )}
+
+            {invite.secondaryPhotoUrl && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className={`flex flex-col items-center ${themeStyles.card} shadow-xl p-4 pb-8 rounded-xl w-full max-w-sm`}
+              >
+                <div className="w-full aspect-[4/5] overflow-hidden rounded-lg mb-6">
+                  <img src={invite.secondaryPhotoUrl} alt={invite.secondaryName} className="w-full h-full object-cover" />
+                </div>
+                <h3 className="text-3xl font-serif font-bold mb-2">{invite.secondaryName}</h3>
+                {invite.secondaryParents && (
+                  <p className="text-sm opacity-70 italic">{invite.secondaryParents}</p>
+                )}
+              </motion.div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Story */}
       {invite.story && (

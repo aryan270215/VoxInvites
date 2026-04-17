@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, getDocs, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { db, auth } from '../firebase';
 import { Link } from 'react-router-dom';
-import { Trash2, ExternalLink, Search, Users, Lock } from 'lucide-react';
+import { Trash2, ExternalLink, Search, Users, Lock, Code } from 'lucide-react';
 import { format } from 'date-fns';
 import { handleFirestoreError, OperationType } from '../utils/firestoreError';
 
@@ -15,6 +15,8 @@ export default function Admin() {
   const [pin, setPin] = useState('');
   const [unlocked, setUnlocked] = useState(false);
   const [pinError, setPinError] = useState(false);
+  const [headCode, setHeadCode] = useState('');
+  const [savingHeadCode, setSavingHeadCode] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((u) => setUser(u));
@@ -32,6 +34,13 @@ export default function Admin() {
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setInvites(data);
+
+        // Fetch global settings
+        const settingsRef = doc(db, 'settings', 'global');
+        const settingsSnap = await getDoc(settingsRef);
+        if (settingsSnap.exists() && settingsSnap.data().headCode) {
+          setHeadCode(settingsSnap.data().headCode);
+        }
       } catch (error) {
         handleFirestoreError(error, OperationType.LIST, 'invitations');
       } finally {
@@ -40,6 +49,19 @@ export default function Admin() {
     };
     fetchInvites();
   }, [user]);
+
+  const handleSaveHeadCode = async () => {
+    setSavingHeadCode(true);
+    try {
+      await setDoc(doc(db, 'settings', 'global'), { headCode }, { merge: true });
+      alert('Global head code saved successfully.');
+    } catch (error) {
+      console.error('Error saving global settings:', error);
+      alert('Failed to save settings.');
+    } finally {
+      setSavingHeadCode(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this invitation?')) return;
@@ -157,6 +179,33 @@ export default function Admin() {
               <p className="text-2xl font-bold text-stone-900">{invites.length}</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-8 mt-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center text-rose-600">
+            <Code className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold font-serif text-stone-900">Global Head Code</h2>
+            <p className="text-sm text-stone-500">Inject code into the &lt;head&gt; of all pages (e.g., AdSense, Analytics, custom scripts).</p>
+          </div>
+        </div>
+        <textarea
+          value={headCode}
+          onChange={(e) => setHeadCode(e.target.value)}
+          placeholder="<!-- Paste your HTML/Scripts here -->"
+          className="w-full h-48 p-4 font-mono text-sm bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none"
+        />
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleSaveHeadCode}
+            disabled={savingHeadCode}
+            className="px-6 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 disabled:opacity-50 transition-colors"
+          >
+            {savingHeadCode ? 'Saving...' : 'Save Settings'}
+          </button>
         </div>
       </div>
 

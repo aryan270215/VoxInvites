@@ -7,10 +7,12 @@ import InviteAdmin from './pages/InviteAdmin';
 import Admin from './pages/Admin';
 import Templates from './pages/Templates';
 import Navbar from './components/Navbar';
+import { HeadCodeInjector } from './components/HeadCodeInjector';
 
 export default function App() {
   return (
     <ErrorBoundary>
+      <HeadCodeInjector />
       <BrowserRouter>
         <div className="min-h-screen bg-stone-50 text-stone-900 font-sans">
           <Navbar />
