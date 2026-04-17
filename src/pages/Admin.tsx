@@ -35,11 +35,15 @@ export default function Admin() {
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setInvites(data);
 
-        // Fetch global settings
-        const settingsRef = doc(db, 'settings', 'global');
-        const settingsSnap = await getDoc(settingsRef);
-        if (settingsSnap.exists() && settingsSnap.data().headCode) {
-          setHeadCode(settingsSnap.data().headCode);
+        // Fetch global settings gracefully
+        try {
+          const settingsRef = doc(db, 'settings', 'global');
+          const settingsSnap = await getDoc(settingsRef);
+          if (settingsSnap.exists() && settingsSnap.data().headCode) {
+            setHeadCode(settingsSnap.data().headCode);
+          }
+        } catch (settingsError) {
+          console.warn("Could not fetch global settings block. It might be due to offline mode or network issues.", settingsError);
         }
       } catch (error) {
         handleFirestoreError(error, OperationType.LIST, 'invitations');

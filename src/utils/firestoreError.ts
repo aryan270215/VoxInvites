@@ -29,8 +29,9 @@ export interface FirestoreErrorInfo {
 import { auth } from '../firebase';
 
 export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errorMessage = error instanceof Error ? error.message : String(error);
   const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
+    error: errorMessage,
     authInfo: {
       userId: auth.currentUser?.uid,
       email: auth.currentUser?.email,
@@ -47,6 +48,19 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     operationType,
     path
   };
+  
   console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  
+  // Only aggressively throw (which trips the ErrorBoundary) for permission errors
+  // This prevents transient offline/connection errors from crashing the entire app
+  if (errorMessage.toLowerCase().includes('permission') || errorMessage.toLowerCase().includes('missing or insufficient permissions')) {
+    throw new Error(JSON.stringify(errInfo));
+  } else {
+    // For other errors like offline, we can just log or alert
+    if (errorMessage.includes('offline') || errorMessage.includes('unavailable')) {
+      console.warn("Firestore connection is offline or unavailable. Retrying in background...");
+    } else {
+      alert(`Database Error: ${errorMessage}`);
+    }
+  }
 }

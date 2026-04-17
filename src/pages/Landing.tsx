@@ -1,156 +1,262 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { Sparkles, Heart, Clock, Image as ImageIcon, MapPin, Music, ShieldCheck, ArrowRight, Leaf, TreePine, Globe2 } from 'lucide-react';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
+const sentenceVariants = {
+  hidden: { opacity: 1 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
+      delay: 0.1,
+      staggerChildren: 0.04,
     },
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 15 } },
+const letterVariants = {
+  hidden: { opacity: 0, y: 40, rotateX: -90 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    rotateX: 0, 
+    transition: { type: "spring", stiffness: 120, damping: 10 } 
+  },
+};
+
+const AnimatedText = ({ text, className }: { text: string, className?: string }) => {
+  return (
+    <motion.span
+      variants={sentenceVariants}
+      initial="hidden"
+      animate="visible"
+      className={`inline-block ${className || ""}`}
+    >
+      {text.split("").map((char, index) => (
+        <motion.span
+          key={`${char}-${index}`}
+          variants={letterVariants}
+          className="inline-block"
+          style={{ transformOrigin: "bottom center" }}
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+};
+
+const wordVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
+};
+
+const AnimatedWords = ({ text, className }: { text: string, className?: string }) => {
+  return (
+    <motion.span
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-10%" }}
+      variants={{
+        hidden: { opacity: 1 },
+        visible: { transition: { staggerChildren: 0.1 } }
+      }}
+      className={`inline-block ${className || ""}`}
+    >
+      {text.split(" ").map((word, index) => (
+        <motion.span key={index} variants={wordVariants} className="inline-block mr-2">
+          {word}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
 };
 
 export default function Landing() {
-  return (
-    <div className="min-h-[calc(100vh-4rem)] bg-stone-50 overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <motion.div animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute top-0 left-1/4 w-96 h-96 bg-rose-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-70" />
-          <motion.div animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} className="absolute top-0 right-1/4 w-96 h-96 bg-amber-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-70" />
-          <motion.div animate={{ scale: [1, 1.1, 1], x: [0, 30, 0] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute -bottom-32 left-1/2 w-96 h-96 bg-pink-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-70" />
-        </div>
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+  
+  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacityFade = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+  return (
+    <div className="min-h-[calc(100vh-4rem)] bg-stone-50 overflow-hidden" ref={containerRef}>
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]">
+        <motion.div style={{ y: yBg, opacity: opacityFade }} className="absolute inset-0 z-0 pointer-events-none">
+          <motion.div animate={{ y: [0, -30, 0], rotate: [0, 5, 0], scale: [1, 1.05, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] bg-rose-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-70" />
+          <motion.div animate={{ y: [0, 30, 0], rotate: [0, -5, 0], scale: [1, 1.1, 1] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] right-[10%] w-[400px] h-[400px] bg-amber-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-70" />
+          <motion.div animate={{ scale: [1, 1.2, 1], x: [0, 40, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-pink-200/40 rounded-full mix-blend-multiply filter blur-[100px] opacity-70" />
+        </motion.div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
           <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="text-center max-w-4xl mx-auto"
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-md border border-stone-200 text-sm font-medium text-stone-600 mb-10 shadow-sm"
           >
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-stone-200 text-sm font-medium text-stone-600 mb-8 shadow-sm">
+            <motion.div
+              animate={{ rotate: [0, 15, -15, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
               <Sparkles className="w-4 h-4 text-rose-500" />
-              <span>The new standard for event invitations</span>
             </motion.div>
-            
-            <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-serif font-bold text-stone-900 mb-8 leading-[1.1] tracking-tight">
-              Craft your perfect <br className="hidden md:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-amber-500">
-                digital invitation
-              </span>
-            </motion.h1>
-            
-            <motion.p variants={itemVariants} className="text-lg md:text-2xl text-stone-600 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
-              Share your story, manage RSVPs, and create a breathtaking digital experience for your guests in minutes. Perfect for weddings, birthdays, corporate events, and more.
-            </motion.p>
-            
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                to="/create"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-stone-900 rounded-full hover:bg-stone-800 transition-all hover:scale-105 shadow-xl hover:shadow-2xl"
-              >
+            <span>The new standard for event invitations</span>
+          </motion.div>
+          
+          <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-serif font-bold text-stone-900 mb-8 leading-[1.1] tracking-tight relative perspective-[1000px]">
+            <AnimatedText text="Craft your perfect" className="block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 block pb-2">
+              <AnimatedText text="digital invitation" />
+            </span>
+          </h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
+            className="text-lg md:text-2xl text-stone-600 mb-12 max-w-2xl mx-auto font-light leading-relaxed"
+          >
+            Share your story, manage RSVPs, and create a breathtaking digital experience for your guests in minutes. Perfect for weddings, birthdays, corporate events, and more.
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 0.6, type: "spring" }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Link
+              to="/create"
+              className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-stone-900 rounded-full hover:bg-stone-800 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+            >
+              <span className="relative z-10 flex items-center">
                 Create Invitation
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
-              <Link
-                to="/templates"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-stone-900 bg-white border border-stone-200 rounded-full hover:bg-stone-50 transition-all hover:scale-105 shadow-sm"
-              >
-                View Demos
-              </Link>
-            </motion.div>
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 h-full w-0 bg-white/20 transition-[width] group-hover:w-full ease-out duration-300 left-0" />
+            </Link>
+            <Link
+              to="/templates"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-stone-900 bg-white border border-stone-200 rounded-full hover:bg-stone-50 transition-all hover:shadow-md hover:-translate-y-1"
+            >
+              View Demos
+            </Link>
           </motion.div>
         </div>
       </section>
 
       {/* Bento Grid Features */}
-      <section className="py-24 bg-white relative z-10">
+      <section className="py-32 bg-white relative z-10 rounded-t-[3rem] shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)] border-t border-white/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4">Everything you need</h2>
-            <p className="text-xl text-stone-500 font-light">Powerful features wrapped in an elegant design.</p>
-          </motion.div>
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-serif font-bold text-stone-900 mb-6 tracking-tight">
+              <AnimatedWords text="Everything you need" />
+            </h2>
+            <p className="text-xl text-stone-500 font-light max-w-2xl mx-auto">
+              <AnimatedWords text="Powerful features wrapped in an elegant and deeply immersive design." />
+            </p>
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
             {/* Large Card */}
             <motion.div 
-              whileHover={{ y: -5, scale: 1.01 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 100, delay: 0.1 }}
-              className="md:col-span-2 bg-stone-50 rounded-3xl p-8 border border-stone-100 relative overflow-hidden group"
+              whileHover={{ y: -8, scale: 1.01 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              className="md:col-span-2 bg-stone-50 rounded-[2rem] p-8 border border-stone-100 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-rose-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 group-hover:opacity-70 transition-opacity" />
-              <Heart className="w-10 h-10 text-rose-500 mb-6" />
-              <h3 className="text-3xl font-serif font-bold text-stone-900 mb-4">Beautiful Themes</h3>
-              <p className="text-lg text-stone-600 max-w-md">Choose from 13+ carefully crafted themes like Cyberpunk, Confetti, and Glassmorphism. Each designed to perfectly match your event's unique aesthetic.</p>
+              <motion.div 
+                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }}
+                transition={{ duration: 10, repeat: Infinity }}
+                className="absolute -top-32 -right-32 w-80 h-80 bg-rose-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-700" 
+              />
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <Heart className="w-12 h-12 text-rose-500 mb-6 drop-shadow-md" />
+                <div>
+                  <h3 className="text-3xl lg:text-4xl font-serif font-bold text-stone-900 mb-4">Beautiful Themes</h3>
+                  <p className="text-lg text-stone-600 max-w-md leading-relaxed">Choose from 13+ carefully crafted themes like Cyberpunk, Confetti, and Glassmorphism. Each designed to perfectly match your event's unique aesthetic.</p>
+                </div>
+              </div>
             </motion.div>
 
             {/* Small Card 1 */}
             <motion.div 
-              whileHover={{ y: -5, scale: 1.02 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
-              className="bg-stone-900 rounded-3xl p-8 text-white relative overflow-hidden group"
+              whileHover={{ y: -8, scale: 1.02 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
+              className="bg-stone-900 rounded-[2rem] p-8 text-white relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-500"
             >
-              <ShieldCheck className="w-10 h-10 text-rose-400 mb-6" />
-              <h3 className="text-2xl font-serif font-bold mb-4">Secure RSVPs</h3>
-              <p className="text-stone-400">Protect your invite with a PIN and manage guest responses seamlessly.</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-stone-800 to-stone-950 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <ShieldCheck className="w-12 h-12 text-rose-400 mb-6 drop-shadow-md" />
+                <div>
+                  <h3 className="text-2xl font-serif font-bold mb-3">Secure RSVPs</h3>
+                  <p className="text-stone-400 leading-relaxed">Protect your invite with a PIN and manage guest responses seamlessly.</p>
+                </div>
+              </div>
             </motion.div>
 
             {/* Small Card 2 */}
             <motion.div 
-              whileHover={{ y: -5, scale: 1.02 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
-              className="bg-amber-50 rounded-3xl p-8 border border-amber-100 relative overflow-hidden group"
+              whileHover={{ y: -8, scale: 1.02 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+              className="bg-amber-50 rounded-[2rem] p-8 border border-amber-100 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500"
             >
-              <MapPin className="w-10 h-10 text-amber-600 mb-6" />
-              <h3 className="text-2xl font-serif font-bold text-stone-900 mb-4">Interactive Maps</h3>
-              <p className="text-stone-600">Integrated Google Maps to help your guests find the venue easily.</p>
+              <motion.div 
+                animate={{ scale: [1, 1.2, 1] }} 
+                transition={{ duration: 8, repeat: Infinity }}
+                className="absolute inset-0 bg-gradient-to-tr from-amber-100/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" 
+              />
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <MapPin className="w-12 h-12 text-amber-600 mb-6 drop-shadow-md" />
+                <div>
+                  <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Interactive Maps</h3>
+                  <p className="text-stone-600 leading-relaxed">Integrated Google Maps to help your guests easily find your perfect venue.</p>
+                </div>
+              </div>
             </motion.div>
 
             {/* Large Card 2 */}
             <motion.div 
-              whileHover={{ y: -5, scale: 1.01 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 100, delay: 0.4 }}
-              className="md:col-span-2 bg-stone-50 rounded-3xl p-8 border border-stone-100 relative overflow-hidden group flex flex-col justify-end"
+              whileHover={{ y: -8, scale: 1.01 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
+              className="md:col-span-2 bg-stone-50 rounded-[2rem] p-8 border border-stone-100 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-end"
             >
-              <div className="absolute top-8 right-8 flex gap-4">
-                <Music className="w-10 h-10 text-stone-400" />
-                <ImageIcon className="w-10 h-10 text-stone-400" />
-                <Clock className="w-10 h-10 text-stone-400" />
+              <motion.div 
+                animate={{ x: [0, 10, 0], y: [0, -10, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-10 right-10 flex gap-6 opacity-30 group-hover:opacity-100 transition-opacity duration-500"
+              >
+                <Music className="w-12 h-12 text-indigo-400 -rotate-12" />
+                <ImageIcon className="w-12 h-12 text-rose-400 rotate-6" />
+                <Clock className="w-12 h-12 text-amber-400 -rotate-6" />
+              </motion.div>
+              <div className="relative z-10 mt-20">
+                <h3 className="text-3xl lg:text-4xl font-serif font-bold text-stone-900 mb-4">Rich Media Experience</h3>
+                <p className="text-lg text-stone-600 max-w-md leading-relaxed">Add background music from YouTube, create a stunning photo gallery, and showcase your elaborate event timeline.</p>
               </div>
-              <h3 className="text-3xl font-serif font-bold text-stone-900 mb-4">Rich Media Experience</h3>
-              <p className="text-lg text-stone-600 max-w-md">Add background music from YouTube, create a stunning photo gallery, and showcase your event timeline.</p>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Eco-Friendly Mission Section */}
-      <section className="py-24 bg-emerald-950 text-emerald-50 relative overflow-hidden">
+      <section className="py-32 bg-emerald-950 text-emerald-50 relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-20">
           <motion.div 
             animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }} 
@@ -164,99 +270,100 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto mb-16"
+            className="text-center max-w-3xl mx-auto mb-20"
           >
             <motion.div 
-              animate={{ rotate: [0, 10, -10, 0] }} 
+              animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} 
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="inline-block mb-6"
+              className="inline-block mb-8"
             >
-              <Leaf className="w-16 h-16 text-emerald-400" />
+              <div className="w-24 h-24 bg-emerald-900/50 rounded-full border border-emerald-800 flex items-center justify-center backdrop-blur-md shadow-lg">
+                <Leaf className="w-12 h-12 text-emerald-400" />
+              </div>
             </motion.div>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Join Our Green Mission</h2>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 tracking-tight">
+              <AnimatedWords text="Join Our Green Mission" />
+            </h2>
             <p className="text-xl text-emerald-200/80 font-light leading-relaxed">
               Traditional paper invitations produce thousands of pounds of waste every year. By choosing Vox Invites, you're not just creating a stunning digital experience—you're actively saving trees and protecting our planet.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <motion.div 
-              whileHover={{ y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-emerald-900/50 backdrop-blur-sm p-8 rounded-3xl border border-emerald-800/50 text-center"
-            >
-              <TreePine className="w-10 h-10 text-emerald-400 mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-3">Save Trees</h3>
-              <p className="text-emerald-200/70">Every digital invite sent means fewer trees cut down for paper and envelopes.</p>
-            </motion.div>
-
-            <motion.div 
-              whileHover={{ y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="bg-emerald-900/50 backdrop-blur-sm p-8 rounded-3xl border border-emerald-800/50 text-center"
-            >
-              <Globe2 className="w-10 h-10 text-emerald-400 mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-3">Zero Carbon Footprint</h3>
-              <p className="text-emerald-200/70">Eliminate the carbon emissions associated with printing and postal delivery.</p>
-            </motion.div>
-
-            <motion.div 
-              whileHover={{ y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="bg-emerald-900/50 backdrop-blur-sm p-8 rounded-3xl border border-emerald-800/50 text-center"
-            >
-              <Heart className="w-10 h-10 text-emerald-400 mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-3">Zero Waste</h3>
-              <p className="text-emerald-200/70">No discarded paper, no plastic packaging. Just pure, sustainable celebration.</p>
-            </motion.div>
+            {[
+              { icon: TreePine, title: "Save Trees", desc: "Every digital invite sent means fewer trees cut down for paper and envelopes.", delay: 0.1 },
+              { icon: Globe2, title: "Zero Carbon", desc: "Eliminate the carbon emissions associated with printing and postal delivery.", delay: 0.2 },
+              { icon: Heart, title: "Zero Waste", desc: "No discarded paper, no plastic packaging. Just pure, sustainable celebration.", delay: 0.3 }
+            ].map((item, i) => (
+              <motion.div 
+                key={i}
+                whileHover={{ y: -10, scale: 1.02 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: item.delay, type: "spring", stiffness: 100 }}
+                className="bg-emerald-900/40 backdrop-blur-md p-8 rounded-[2rem] border border-emerald-800/50 text-center shadow-xl relative overflow-hidden group"
+              >
+                <motion.div 
+                  className="absolute inset-0 bg-emerald-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
+                />
+                <item.icon className="w-12 h-12 text-emerald-400 mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-300" />
+                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
+                <p className="text-emerald-200/80 leading-relaxed font-light">{item.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 bg-stone-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-rose-500 rounded-full mix-blend-screen filter blur-[100px]" />
-        </div>
+      <section className="py-40 bg-stone-900 text-white relative overflow-hidden">
+        <motion.div 
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 z-0"
+        >
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-rose-500 rounded-full mix-blend-screen filter blur-[150px]" />
+        </motion.div>
+        
         <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
           <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-5xl md:text-6xl font-serif font-bold mb-8"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ type: "spring", stiffness: 80, damping: 20 }}
+            className="text-5xl md:text-7xl font-serif font-bold mb-8 tracking-tight leading-tight"
           >
-            Ready to create your invite?
+             <AnimatedWords text="Ready to create your invite?" />
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-stone-300 mb-12 font-light"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-2xl text-stone-300 mb-14 font-light max-w-2xl mx-auto"
           >
             Join thousands of hosts who have shared their special day with Vox Invites.
           </motion.p>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
           >
             <Link
               to="/create"
-              className="inline-flex items-center justify-center px-10 py-5 text-lg font-medium text-stone-900 bg-white rounded-full hover:bg-stone-100 transition-all hover:scale-105 shadow-2xl"
+              className="group relative inline-flex items-center justify-center px-10 py-5 text-xl font-medium text-stone-900 bg-white rounded-full hover:bg-stone-50 transition-all hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] overflow-hidden"
             >
-              Get Started for Free
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-[200%]"
+                animate={{ translateX: ["-200%", "200%"] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+              />
+              <span className="relative z-10 flex items-center">
+                Get Started for Free
+                <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform duration-300" />
+              </span>
             </Link>
           </motion.div>
         </div>
