@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Palette, Sparkles, ArrowRight, Eye, Calendar, MapPin, Heart } from 'lucide-react';
+import { Palette, Sparkles, ArrowRight, Eye, Calendar, MapPin, Heart, Music } from 'lucide-react';
 import { templates } from '../utils/demoData';
 
 const categories = [
@@ -46,9 +46,9 @@ const TemplateCard: React.FC<{ template: any, index: number }> = ({ template, in
       <div className={`h-64 w-full ${template.color} relative overflow-hidden`}>
         {/* Slide 1: Cover */}
         <div className={`absolute inset-0 transition-opacity duration-700 ${activeSlide === 0 ? 'opacity-100' : 'opacity-0'}`}>
-          {demo?.imageUrls?.[0] && (
+          {(demo?.introImageUrl || demo?.imageUrls?.[0]) && (
             <img 
-              src={demo.imageUrls[0]} 
+              src={demo.introImageUrl || demo?.imageUrls?.[0]} 
               alt={template.title} 
               className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
               referrerPolicy="no-referrer"
@@ -90,6 +90,17 @@ const TemplateCard: React.FC<{ template: any, index: number }> = ({ template, in
               Customize <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+          {demo.musicUrl && (
+            <a 
+              href={demo.musicUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="transform translate-y-4 group-hover:translate-y-0 transition-all delay-150 text-white/80 hover:text-white text-xs font-medium flex items-center gap-1 mt-1 hover:scale-105"
+            >
+              <Music className="w-3 h-3" /> Preview Music
+            </a>
+          )}
         </div>
 
         {/* Slide Indicators */}

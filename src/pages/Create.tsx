@@ -417,7 +417,73 @@ export default function Create() {
           {/* Media */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-stone-800 border-b pb-2">Media & Gallery</h2>
-            <div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-2">Cover Photo (Optional)</label>
+                <div className={`w-full aspect-[4/3] relative rounded-xl border-2 ${introImageUrl ? 'border-indigo-500' : 'border-dashed border-stone-300 hover:border-indigo-500'} flex items-center justify-center overflow-hidden group`}>
+                  {introImageUrl ? (
+                    <>
+                      <img src={introImageUrl} className="w-full h-full object-cover" alt="Cover" />
+                      <button type="button" onClick={() => setIntroImageUrl('')} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                        <Trash2 className="w-6 h-6 text-rose-400" />
+                      </button>
+                    </>
+                  ) : (
+                    <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-4 text-center">
+                      <UploadCloud className="w-6 h-6 text-stone-400 mb-2" />
+                      <span className="text-xs text-stone-500 font-medium leading-tight">Upload<br/>Cover Photo</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSingleImageUpload(e, setIntroImageUrl)} disabled={uploadingImages} />
+                    </label>
+                  )}
+                  {uploadingImages && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-stone-400" /></div>}
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-2">Bride / Host 1 Photo</label>
+                <div className={`w-full aspect-[4/3] relative rounded-xl border-2 ${primaryPhotoUrl ? 'border-rose-400' : 'border-dashed border-stone-300 hover:border-rose-400'} flex items-center justify-center overflow-hidden group`}>
+                  {primaryPhotoUrl ? (
+                    <>
+                      <img src={primaryPhotoUrl} className="w-full h-full object-cover" alt="Host 1" />
+                      <button type="button" onClick={() => setPrimaryPhotoUrl('')} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                        <Trash2 className="w-6 h-6 text-rose-400" />
+                      </button>
+                    </>
+                  ) : (
+                    <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-4 text-center">
+                      <UploadCloud className="w-6 h-6 text-stone-400 mb-2" />
+                      <span className="text-xs text-stone-500 font-medium leading-tight">Upload<br/>Photo 1</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSingleImageUpload(e, setPrimaryPhotoUrl)} disabled={uploadingImages} />
+                    </label>
+                  )}
+                  {uploadingImages && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-stone-400" /></div>}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-2">Groom / Host 2 Photo</label>
+                <div className={`w-full aspect-[4/3] relative rounded-xl border-2 ${secondaryPhotoUrl ? 'border-amber-400' : 'border-dashed border-stone-300 hover:border-amber-400'} flex items-center justify-center overflow-hidden group`}>
+                  {secondaryPhotoUrl ? (
+                    <>
+                      <img src={secondaryPhotoUrl} className="w-full h-full object-cover" alt="Host 2" />
+                      <button type="button" onClick={() => setSecondaryPhotoUrl('')} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                        <Trash2 className="w-6 h-6 text-rose-400" />
+                      </button>
+                    </>
+                  ) : (
+                    <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-4 text-center">
+                      <UploadCloud className="w-6 h-6 text-stone-400 mb-2" />
+                      <span className="text-xs text-stone-500 font-medium leading-tight">Upload<br/>Photo 2</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSingleImageUpload(e, setSecondaryPhotoUrl)} disabled={uploadingImages} />
+                    </label>
+                  )}
+                  {uploadingImages && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-stone-400" /></div>}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2">
               <label className="block text-sm font-medium text-stone-700 mb-1">Background Music URL (Optional)</label>
               <input type="url" placeholder="https://..." className="w-full px-4 py-2 rounded-lg border border-stone-300 focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none" value={formData.musicUrl} onChange={e => setFormData({...formData, musicUrl: e.target.value})} />
             </div>

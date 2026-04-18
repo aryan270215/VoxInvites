@@ -16,7 +16,14 @@ export default function Admin() {
   const [unlocked, setUnlocked] = useState(false);
   const [pinError, setPinError] = useState(false);
   const [headCode, setHeadCode] = useState('');
-  const [savingHeadCode, setSavingHeadCode] = useState(false);
+  const [adCodes, setAdCodes] = useState({
+    banner: '',
+    interstitial: '',
+    rewarded: '',
+    nativeAdvanced: '',
+    appOpen: ''
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((u) => setUser(u));
@@ -39,8 +46,10 @@ export default function Admin() {
         try {
           const settingsRef = doc(db, 'settings', 'global');
           const settingsSnap = await getDoc(settingsRef);
-          if (settingsSnap.exists() && settingsSnap.data().headCode) {
-            setHeadCode(settingsSnap.data().headCode);
+          if (settingsSnap.exists()) {
+            const data = settingsSnap.data();
+            if (data.headCode) setHeadCode(data.headCode);
+            if (data.adCodes) setAdCodes(data.adCodes);
           }
         } catch (settingsError) {
           console.warn("Could not fetch global settings block. It might be due to offline mode or network issues.", settingsError);
@@ -54,16 +63,16 @@ export default function Admin() {
     fetchInvites();
   }, [user]);
 
-  const handleSaveHeadCode = async () => {
-    setSavingHeadCode(true);
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
     try {
-      await setDoc(doc(db, 'settings', 'global'), { headCode }, { merge: true });
-      alert('Global head code saved successfully.');
+      await setDoc(doc(db, 'settings', 'global'), { headCode, adCodes }, { merge: true });
+      alert('Global settings saved successfully.');
     } catch (error) {
       console.error('Error saving global settings:', error);
       alert('Failed to save settings.');
     } finally {
-      setSavingHeadCode(false);
+      setSavingSettings(false);
     }
   };
 
@@ -204,11 +213,82 @@ export default function Admin() {
         />
         <div className="mt-4 flex justify-end">
           <button
-            onClick={handleSaveHeadCode}
-            disabled={savingHeadCode}
+            onClick={handleSaveSettings}
+            disabled={savingSettings}
             className="px-6 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 disabled:opacity-50 transition-colors"
           >
-            {savingHeadCode ? 'Saving...' : 'Save Settings'}
+            {savingSettings ? 'Saving...' : 'Save Settings'}
+          </button>
+        </div>
+      </div>
+
+      {/* Ad Codes Settings */}
+      <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-8 mt-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+            <ExternalLink className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold font-serif text-stone-900">Ad Monetization Codes</h2>
+            <p className="text-sm text-stone-500">Paste your ad network scripts below. These will be automatically rendered in their respective positions.</p>
+          </div>
+        </div>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Banner Ads (Top & Bottom)</label>
+            <textarea
+              value={adCodes.banner}
+              onChange={(e) => setAdCodes({...adCodes, banner: e.target.value})}
+              placeholder="<!-- Paste Banner Ad Code -->"
+              className="w-full h-24 p-4 font-mono text-xs bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Interstitial Ads (Full Page)</label>
+            <textarea
+              value={adCodes.interstitial}
+              onChange={(e) => setAdCodes({...adCodes, interstitial: e.target.value})}
+              placeholder="<!-- Paste Interstitial Ad Code -->"
+              className="w-full h-24 p-4 font-mono text-xs bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Rewarded Ads (Unlock Content)</label>
+            <textarea
+              value={adCodes.rewarded}
+              onChange={(e) => setAdCodes({...adCodes, rewarded: e.target.value})}
+              placeholder="<!-- Paste Rewarded Ad Code -->"
+              className="w-full h-24 p-4 font-mono text-xs bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Native Advanced Ads</label>
+            <textarea
+              value={adCodes.nativeAdvanced}
+              onChange={(e) => setAdCodes({...adCodes, nativeAdvanced: e.target.value})}
+              placeholder="<!-- Paste Native Advanced Ad Code -->"
+              className="w-full h-24 p-4 font-mono text-xs bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">App Open Ads</label>
+            <textarea
+              value={adCodes.appOpen}
+              onChange={(e) => setAdCodes({...adCodes, appOpen: e.target.value})}
+              placeholder="<!-- Paste App Open Ad Code -->"
+              className="w-full h-24 p-4 font-mono text-xs bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleSaveSettings}
+            disabled={savingSettings}
+            className="px-6 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 disabled:opacity-50 transition-colors"
+          >
+            {savingSettings ? 'Saving...' : 'Save Settings'}
           </button>
         </div>
       </div>

@@ -100,7 +100,8 @@ export default function Invite() {
         if (template && template.demoData) {
           const data = { ...template.demoData, id, creatorId: 'demo-creator' };
           setInvite(data);
-          checkExpiration(data);
+          // Never expire demos so they are aways visible
+          setIsExpired(false);
           setUnlocked(true);
           setLoading(false);
           
@@ -259,7 +260,19 @@ export default function Invite() {
   const handleOpen = () => {
     setIsOpened(true);
     if (invite.musicUrl) {
-      setIsPlaying(true);
+      setTimeout(() => {
+        if (isYoutube && ytIframeRef.current) {
+          ytIframeRef.current.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*');
+          setIsPlaying(true);
+        } else if (audioRef.current) {
+          audioRef.current.play().then(() => {
+            setIsPlaying(true);
+          }).catch(e => {
+            console.error("Audio autoplay failed:", e);
+            setIsPlaying(false);
+          });
+        }
+      }, 500); // Wait for the element to mount after isOpened becomes true
     }
   };
 
@@ -306,16 +319,45 @@ export default function Invite() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 z-0"></div>
           
           <motion.div 
-            initial={{ opacity: 0, y: -20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1, transition: { staggerChildren: 0.3, delayChildren: 0.2 } }
+            }}
             className="text-center z-10 px-4 pt-16 w-full"
           >
             {invite.introGreeting && (
-              <p className="text-xl md:text-2xl mb-4 font-medium tracking-wider">{invite.introGreeting}</p>
+              <motion.p 
+                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
+                className="text-xl md:text-2xl mb-4 font-medium tracking-wider drop-shadow-md"
+              >
+                {invite.introGreeting}
+              </motion.p>
             )}
-            <h1 className="text-5xl md:text-7xl font-serif font-bold mb-4 drop-shadow-lg">
-              {invite.primaryName || invite.brideName} {(invite.secondaryName || invite.groomName) && <><br/><span className="text-3xl font-light italic">&</span><br/> {invite.secondaryName || invite.groomName}</>}
-            </h1>
+            <motion.h1 
+              variants={{ hidden: { opacity: 0, scale: 0.9, y: 30 }, visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 1, ease: "easeOut" } } }}
+              className="text-5xl md:text-7xl font-serif font-bold mb-4 drop-shadow-xl"
+            >
+              {invite.primaryName || invite.brideName}
+            </motion.h1>
+            
+            {(invite.secondaryName || invite.groomName) && (
+              <>
+                <motion.div 
+                  variants={{ hidden: { opacity: 0, rotate: -45, scale: 0 }, visible: { opacity: 1, rotate: 0, scale: 1, transition: { duration: 0.6, ease: "backOut" } } }}
+                  className="text-4xl font-light italic opacity-80 my-2 drop-shadow-lg font-serif"
+                >
+                  &
+                </motion.div>
+                <motion.h1 
+                  variants={{ hidden: { opacity: 0, scale: 0.9, y: 30 }, visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 1, ease: "easeOut" } } }}
+                  className="text-5xl md:text-7xl font-serif font-bold drop-shadow-xl"
+                >
+                  {invite.secondaryName || invite.groomName}
+                </motion.h1>
+              </>
+            )}
           </motion.div>
 
           <motion.div 
@@ -428,7 +470,8 @@ export default function Invite() {
       )}
 
       {/* Hero */}
-      <AdBanner />
+      <AdBanner format="appOpen" />
+      <AdBanner format="banner" />
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-4 relative overflow-hidden">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
           <p className="text-sm tracking-[0.3em] uppercase mb-6">
@@ -464,11 +507,11 @@ export default function Invite() {
         </motion.div>
       </section>
 
-      {/* Two Hearts, One Journey (Couple Photos) */}
-      {(invite.primaryPhotoUrl || invite.secondaryPhotoUrl) && (invite.eventType === 'wedding' || invite.eventType === 'engagement') && (
+      {/* Host / Couple Photos */}
+      {(invite.primaryPhotoUrl || invite.secondaryPhotoUrl) && (
         <section className="py-20 px-4 max-w-4xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-serif tracking-widest uppercase mb-16 opacity-80">
-            Two Hearts, One Journey
+            {invite.eventType === 'wedding' || invite.eventType === 'engagement' ? 'Two Hearts, One Journey' : 'Meet Your Hosts'}
           </h2>
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
             {invite.primaryPhotoUrl && (
@@ -512,6 +555,9 @@ export default function Invite() {
           </div>
         </section>
       )}
+
+      {/* Interstitial Ad Space */}
+      <AdBanner format="interstitial" />
 
       {/* Story */}
       {invite.story && (
@@ -573,27 +619,22 @@ export default function Invite() {
         </div>
       </section>
 
+      <AdBanner format="nativeAdvanced" />
+
       {/* Gallery */}
       {invite.imageUrls && invite.imageUrls.length > 0 && (
         <section className="py-20 px-4">
           <h2 className="text-3xl font-serif text-center mb-12">Gallery</h2>
-          {!galleryUnlocked ? (
-            <div className="max-w-md mx-auto text-center">
-              <p className="mb-6 opacity-80">The photo gallery is locked. Watch a short sponsor message to unlock it.</p>
-              <AdBanner format="rewarded" onReward={() => setGalleryUnlocked(true)} />
-            </div>
-          ) : (
-            <div className="max-w-6xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
-              {invite.imageUrls.map((url: string, idx: number) => (
-                <img key={idx} src={url} alt="Gallery" className="w-full rounded-lg shadow-md hover:opacity-90 transition-opacity" referrerPolicy="no-referrer" />
-              ))}
-            </div>
-          )}
+          <div className="max-w-6xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+            {invite.imageUrls.map((url: string, idx: number) => (
+              <img key={idx} src={url} alt="Gallery" className="w-full rounded-lg shadow-md hover:opacity-90 transition-opacity" referrerPolicy="no-referrer" />
+            ))}
+          </div>
         </section>
       )}
 
       {/* RSVP */}
-      <AdBanner />
+      <AdBanner format="banner" />
       <section className="py-20 px-4 max-w-xl mx-auto">
         <div className={`${themeStyles.card} p-8 md:p-12 rounded-2xl shadow-xl`}>
           <h2 className="text-3xl font-serif text-center mb-8">RSVP</h2>
