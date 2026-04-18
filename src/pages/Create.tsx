@@ -238,7 +238,9 @@ export default function Create() {
       };
 
       // Check if the payload is too large for a Firestore document (1MB limit)
-      const approxSize = JSON.stringify(inviteData).length;
+      const inviteDataForSize = { ...inviteData };
+      delete inviteDataForSize.createdAt;
+      const approxSize = JSON.stringify(inviteDataForSize).length;
       if (approxSize > 900000) {
         alert("The images you selected are too large to save. Please select fewer images.");
         setLoading(false);

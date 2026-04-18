@@ -29,17 +29,21 @@ export default function AdBanner({ format = 'banner' }: { format?: 'banner' | 'i
       containerRef.current.innerHTML = '';
       const range = document.createRange();
       range.selectNode(containerRef.current);
-      const fragment = range.createContextualFragment(adCode);
-      
-      const scripts = fragment.querySelectorAll('script');
-      scripts.forEach(oldScript => {
-        const newScript = document.createElement('script');
-        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-        oldScript.parentNode?.replaceChild(newScript, oldScript);
-      });
-      
-      containerRef.current.appendChild(fragment);
+      try {
+        const fragment = range.createContextualFragment(adCode);
+        
+        const scripts = fragment.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          oldScript.parentNode?.replaceChild(newScript, oldScript);
+        });
+        
+        containerRef.current.appendChild(fragment);
+      } catch (e) {
+        console.error("Failed to parse ad code", e);
+      }
     }
   }, [adCode]);
 
@@ -48,13 +52,29 @@ export default function AdBanner({ format = 'banner' }: { format?: 'banner' | 'i
   }
 
   // Format specific wrapper styles
-  const wrapperStyle = format === 'interstitial' || format === 'appOpen' 
+  const isOverlay = format === 'interstitial' || format === 'appOpen';
+  const wrapperStyle = isOverlay 
     ? "fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4" 
     : "w-full my-8 flex flex-col items-center justify-center overflow-hidden";
 
+  const [isHidden, setIsHidden] = useState(false);
+
+  if (isHidden) return null;
+
   return (
     <div className={wrapperStyle}>
-      <div ref={containerRef} className="w-full flex justify-center items-center" />
+      <div className="relative w-full max-w-4xl max-h-full flex flex-col items-center justify-center overflow-y-auto bg-transparent">
+        {isOverlay && (
+          <button 
+            onClick={() => setIsHidden(true)} 
+            className="absolute top-2 right-2 bg-white text-black p-2 rounded-full font-bold z-[101] shadow-lg flex items-center justify-center w-10 h-10 hover:bg-stone-200"
+            aria-label="Close Ad"
+          >
+            ✕
+          </button>
+        )}
+        <div ref={containerRef} className="w-full flex justify-center items-center" />
+      </div>
     </div>
   );
 }

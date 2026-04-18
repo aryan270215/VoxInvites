@@ -380,7 +380,9 @@ export default function Invite() {
               </span>
             </motion.button>
             <div className="text-lg font-medium tracking-widest uppercase">
-              {new Date(invite.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              {invite.date && !isNaN(new Date(invite.date).getTime()) 
+                ? new Date(invite.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+                : invite.date}
             </div>
             <div className="opacity-60 text-xs font-medium tracking-wide mt-6">
               Made With ❤️ By VoxInvites

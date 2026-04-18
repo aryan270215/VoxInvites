@@ -43,6 +43,10 @@ export function HeadCodeInjector() {
       if (error.message && error.message.includes('offline')) {
         return;
       }
+      if (error.message && (error.message.includes('permission') || error.message.includes('Missing or insufficient'))) {
+        console.warn('HeadCodeInjector: Permission denied while fetching global head code. Ensure rules allow read access to settings/global.');
+        return;
+      }
       console.error('Error fetching global head code:', error);
     });
 
