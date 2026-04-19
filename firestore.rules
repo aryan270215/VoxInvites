@@ -1,112 +1,32 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: invitations
-    // Document ID: auto-generated
-    // Fields:
-    //   - creatorId: string (required) - UID of the user who created it
-    //   - brideName: string (required, < 100 chars)
-    //   - groomName: string (required, < 100 chars)
-    //   - date: string (required)
-    //   - venue: string (required, < 500 chars)
-    //   - theme: string (required, in ['royal', 'modern', 'minimal'])
-    //   - createdAt: timestamp (required)
-    //   - pin: string (optional, <= 10 chars)
-    //   - story: string (optional, <= 5000 chars)
-    //   - musicUrl: string (optional, <= 1000 chars)
-    //   - imageUrls: list (optional, <= 10 items)
-    //   - events: list (optional, <= 20 items)
-    //
-    // Collection: invitations/{inviteId}/rsvps
-    // Document ID: auto-generated
-    // Fields:
-    //   - name: string (required, < 100 chars)
-    //   - attending: bool (required)
-    //   - guests: number (required, 0-20)
-    //   - createdAt: timestamp (required)
-    //   - message: string (optional, <= 1000 chars)
-    //
-    // ===============================================================
-    
-    // Default Deny All (Global Safety Net)
+    // Default Deny All
     match /{document=**} {
       allow read, write: if false;
     }
 
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    function isAdmin() {
-      return isAuthenticated() && request.auth.token.email == "patadiaaryan27@gmail.com" && request.auth.token.email_verified == true;
-    }
-
-    function isOwner(creatorId) {
-      return isAuthenticated() && request.auth.uid == creatorId;
-    }
-
-    function isValidInvitation() {
-      let data = request.resource.data;
-      return data.keys().hasAll(['creatorId', 'date', 'venue', 'theme', 'createdAt']) &&
-             data.creatorId is string &&
-             (!('brideName' in data) || (data.brideName is string && data.brideName.size() < 100)) &&
-             (!('groomName' in data) || (data.groomName is string && data.groomName.size() < 100)) &&
-             (!('primaryName' in data) || (data.primaryName is string && data.primaryName.size() < 100)) &&
-             (!('secondaryName' in data) || (data.secondaryName is string && data.secondaryName.size() < 100)) &&
-             (!('eventType' in data) || (data.eventType is string && data.eventType.size() < 50)) &&
-             (!('introGreeting' in data) || (data.introGreeting is string && data.introGreeting.size() < 100)) &&
-             (!('mapUrl' in data) || (data.mapUrl is string && data.mapUrl.size() < 1000)) &&
-             data.date is string && data.date.size() > 0 && data.date.size() < 100 &&
-             data.venue is string && data.venue.size() > 0 && data.venue.size() < 500 &&
-             data.theme is string && data.theme in ['royal', 'modern', 'minimal', 'botanical', 'ocean', 'midnight', 'sunset', 'glassmorphism', 'neon', 'vintage', 'elegant', 'cyberpunk', 'confetti', 'corporate', 'boho', 'artdeco', 'watercolor', 'rustic', 'gothic', 'tropical', 'fairytale', 'retro'] &&
-             data.createdAt is timestamp &&
-             (!('primaryParents' in data) || (data.primaryParents is string)) &&
-             (!('secondaryParents' in data) || (data.secondaryParents is string)) &&
-             (!('primaryPhotoUrl' in data) || (data.primaryPhotoUrl is string)) &&
-             (!('secondaryPhotoUrl' in data) || (data.secondaryPhotoUrl is string)) &&
-             (!('introImageUrl' in data) || (data.introImageUrl is string)) &&
-             (!('pin' in data) || (data.pin is string && data.pin.size() <= 10)) &&
-             (!('adminPin' in data) || (data.adminPin is string && data.adminPin.size() <= 10)) &&
-             (!('story' in data) || (data.story is string && data.story.size() <= 5000)) &&
-             (!('musicUrl' in data) || (data.musicUrl is string && data.musicUrl.size() <= 1000)) &&
-             (!('imageUrls' in data) || (data.imageUrls is list && data.imageUrls.size() <= 10)) &&
-             (!('events' in data) || (data.events is list && data.events.size() <= 20)) &&
-             (!('isAdFree' in data) || data.isAdFree is bool) &&
-             (!('paymentCurrency' in data) || (data.paymentCurrency is string && data.paymentCurrency.size() <= 10)) &&
-             (!('paymentAmount' in data) || data.paymentAmount is number) &&
-             (!('upgradedAt' in data) || data.upgradedAt is timestamp);
-    }
-
-    function isValidRSVP() {
-      let data = request.resource.data;
-      return data.keys().hasAll(['name', 'attending', 'guests', 'createdAt']) &&
-             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             data.attending is bool &&
-             data.guests is number && data.guests >= 0 && data.guests <= 20 &&
-             data.createdAt is timestamp &&
-             (!('message' in data) || (data.message is string && data.message.size() <= 1000));
-    }
-
     match /invitations/{inviteId} {
+      // Anyone can read an invitation to view it
       allow read: if true;
-      allow create: if isAuthenticated() && isValidInvitation() && request.resource.data.creatorId == request.auth.uid;
-      allow update: if isAuthenticated() && isValidInvitation() && (isOwner(resource.data.creatorId) || isAdmin()) && request.resource.data.creatorId == resource.data.creatorId && request.resource.data.createdAt == resource.data.createdAt;
-      allow delete: if isAdmin() || isOwner(resource.data.creatorId);
+      
+      // Only authenticated users can create, and they must set themselves as the creator
+      allow create: if request.auth != null && request.resource.data.creatorId == request.auth.uid;
+      
+      // Only the original creator can edit or delete their invitation
+      allow update: if request.auth != null && resource.data.creatorId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.creatorId == request.auth.uid;
 
       match /rsvps/{rsvpId} {
+        // Anyone can read RSVPs for the invitation
         allow read: if true;
-        allow create: if isValidRSVP();
-        allow update, delete: if false; // RSVPs are append-only for guests
+        
+        // Anyone can submit an RSVP
+        allow create: if true;
+        
+        // RSVPs cannot be modified or deleted directly by guests
+        allow update, delete: if false;
       }
-    }
-
-    match /settings/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
     }
   }
 }

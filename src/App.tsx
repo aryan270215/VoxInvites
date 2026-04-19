@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Landing from './pages/Landing';
 import Create from './pages/Create';
+import Success from './pages/Success';
 import Invite from './pages/Invite';
 import InviteAdmin from './pages/InviteAdmin';
 import Admin from './pages/Admin';
@@ -20,6 +21,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/create" element={<Create />} />
+              <Route path="/success/:id" element={<Success />} />
               <Route path="/templates" element={<Templates />} />
               <Route path="/invite/:id" element={<Invite />} />
               <Route path="/invite/:id/admin" element={<InviteAdmin />} />

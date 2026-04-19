@@ -54,7 +54,11 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   // Only aggressively throw (which trips the ErrorBoundary) for permission errors
   // This prevents transient offline/connection errors from crashing the entire app
   if (errorMessage.toLowerCase().includes('permission') || errorMessage.toLowerCase().includes('missing or insufficient permissions')) {
+    alert(`Firebase Permission Error: We couldn't save this. Please check if your Firebase Rules are blocking the write!`);
     throw new Error(JSON.stringify(errInfo));
+  } else if (errorMessage.toLowerCase().includes('not found')) {
+     alert(`CRITICAL SETUP ERROR: Your Firebase project does not have a Firestore Database created! Please open your Firebase Console, navigate to "Firestore Database" on the left menu, and click "Create Database". Start it in production mode.`);
+     throw new Error(JSON.stringify(errInfo));
   } else {
     // For other errors like offline, we can just log or alert
     if (errorMessage.includes('offline') || errorMessage.includes('unavailable')) {

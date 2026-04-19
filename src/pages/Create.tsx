@@ -206,6 +206,9 @@ export default function Create() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log("[Create] Submit started");
+
+    let timeoutId: NodeJS.Timeout;
 
     try {
       const validEvents = events.filter(ev => ev.name && ev.time);
@@ -236,11 +239,13 @@ export default function Create() {
         secondaryPhotoUrl,
         createdAt: serverTimestamp(),
       };
+      console.log("[Create] Payload prepared:", JSON.stringify({...inviteData, createdAt: 'serverTimestamp', imageUrls: `[${validImages.length} images]`}));
 
       // Check if the payload is too large for a Firestore document (1MB limit)
       const inviteDataForSize = { ...inviteData };
       delete inviteDataForSize.createdAt;
       const approxSize = JSON.stringify(inviteDataForSize).length;
+      console.log(`[Create] Approximate payload size: ${approxSize} bytes`);
       if (approxSize > 900000) {
         alert("The images you selected are too large to save. Please select fewer images.");
         setLoading(false);
@@ -248,35 +253,71 @@ export default function Create() {
       }
 
       let inviteId = '';
+      
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error("Database connection timed out. Please check if your Firestore Database is created and active in the Firebase Console, and ensure your internet connection is stable.")), 30000);
+      });
+
       if (formData.customId) {
+        console.log(`[Create] Checking custom ID: ${formData.customId}`);
         // Validate custom ID format
         const customIdRegex = /^[a-z0-9-]+$/;
         if (!customIdRegex.test(formData.customId)) {
           alert("Custom URL ID can only contain lowercase letters, numbers, and hyphens.");
           setLoading(false);
+          clearTimeout(timeoutId!);
           return;
         }
 
         // Check if custom ID already exists
         const docRef = doc(db, 'invitations', formData.customId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          alert("This Custom URL ID is already taken. Please choose another one.");
-          setLoading(false);
-          return;
+        try {
+          const docSnap = await Promise.race([getDoc(docRef), timeoutPromise]);
+          console.log(`[Create] Custom ID existence check complete: exists=${docSnap.exists()}`);
+          if (docSnap.exists()) {
+            alert("This Custom URL ID is already taken. Please choose another one.");
+            setLoading(false);
+            clearTimeout(timeoutId!);
+            return;
+          }
+        } catch(error) {
+          console.error("[Create] getDoc custom ID error");
+          throw error;
         }
 
-        await setDoc(docRef, inviteData);
-        inviteId = formData.customId;
+        console.log(`[Create] Saving with custom ID...`);
+        try {
+          await Promise.race([setDoc(docRef, inviteData), timeoutPromise]);
+          console.log(`[Create] Saved with custom ID successfully`);
+          inviteId = formData.customId;
+        } catch(error) {
+          console.error("[Create] setDoc error");
+          throw error;
+        }
       } else {
-        const docRef = await addDoc(collection(db, 'invitations'), inviteData);
-        inviteId = docRef.id;
+        console.log(`[Create] Saving with auto-generated ID...`);
+        try {
+          const docRef = await Promise.race([
+            addDoc(collection(db, 'invitations'), inviteData),
+            timeoutPromise
+          ]);
+          console.log(`[Create] Saved with auto ID completely: ${docRef.id}`);
+          inviteId = docRef.id;
+        } catch(error) {
+          console.error("[Create] addDoc error");
+          throw error;
+        }
       }
       
+      clearTimeout(timeoutId!);
+      console.log(`[Create] Navigating to /invite/${inviteId}`);
       navigate(`/invite/${inviteId}`);
     } catch (error) {
+      if (timeoutId!) clearTimeout(timeoutId);
+      console.error("[Create] Caught error in handleSubmit:", error);
       handleFirestoreError(error, OperationType.CREATE, 'invitations');
     } finally {
+      console.log("[Create] Finalizing submit state");
       setLoading(false);
     }
   };
