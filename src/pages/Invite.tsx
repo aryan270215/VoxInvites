@@ -8,6 +8,7 @@ import { format, differenceInDays } from 'date-fns';
 import { handleFirestoreError, OperationType } from '../utils/firestoreError';
 import AdBanner from '../components/AdBanner';
 import { templates } from '../utils/demoData';
+import ReactPlayer from 'react-player';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -27,10 +28,6 @@ export default function Invite() {
   const [isOpened, setIsOpened] = useState(false);
   const [galleryUnlocked, setGalleryUnlocked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false); // Default to false, will play on open
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const ytIframeRef = useRef<HTMLIFrameElement>(null);
-  const [isYoutube, setIsYoutube] = useState(false);
-  const [ytId, setYtId] = useState('');
   const [isExpired, setIsExpired] = useState(false);
 
   // RSVP State
@@ -104,16 +101,6 @@ export default function Invite() {
           setIsExpired(false);
           setUnlocked(true);
           setLoading(false);
-          
-          if ((data as any).musicUrl) {
-            const ytMatch = (data as any).musicUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
-            if (ytMatch) {
-              setIsYoutube(true);
-              setYtId(ytMatch[1]);
-            } else {
-              setIsYoutube(false);
-            }
-          }
           return;
         }
       }
@@ -127,15 +114,6 @@ export default function Invite() {
           setInvite(data);
           checkExpiration(data);
           if (!data.pin) setUnlocked(true);
-          if (data.musicUrl) {
-            const ytMatch = data.musicUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
-            if (ytMatch) {
-              setIsYoutube(true);
-              setYtId(ytMatch[1]);
-            } else {
-              setIsYoutube(false);
-            }
-          }
         }
       } catch (error) {
         handleFirestoreError(error, OperationType.GET, `invitations/${id}`);
@@ -159,18 +137,7 @@ export default function Invite() {
   };
 
   const toggleMusic = () => {
-    if (isYoutube && ytIframeRef.current) {
-      const func = isPlaying ? 'pauseVideo' : 'playVideo';
-      ytIframeRef.current.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: func, args: [] }), '*');
-      setIsPlaying(!isPlaying);
-    } else if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(e => console.error("Audio play failed:", e));
-      }
-      setIsPlaying(!isPlaying);
-    }
+    setIsPlaying(!isPlaying);
   };
 
   const handleRsvpSubmit = async (e: React.FormEvent) => {
@@ -260,19 +227,7 @@ export default function Invite() {
   const handleOpen = () => {
     setIsOpened(true);
     if (invite.musicUrl) {
-      setTimeout(() => {
-        if (isYoutube && ytIframeRef.current) {
-          ytIframeRef.current.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*');
-          setIsPlaying(true);
-        } else if (audioRef.current) {
-          audioRef.current.play().then(() => {
-            setIsPlaying(true);
-          }).catch(e => {
-            console.error("Audio autoplay failed:", e);
-            setIsPlaying(false);
-          });
-        }
-      }, 500); // Wait for the element to mount after isOpened becomes true
+      setIsPlaying(true);
     }
   };
 
@@ -449,25 +404,23 @@ export default function Invite() {
         </button>
       </div>
 
-      {/* Hidden Audio Players */}
-      {isOpened && invite.musicUrl && (
+      {/* Hidden Audio Player */}
+      {invite.musicUrl && (
         <div className="hidden">
-          {isYoutube ? (
-            <iframe
-              ref={ytIframeRef}
-              src={`https://www.youtube.com/embed/${ytId}?autoplay=1&loop=1&playlist=${ytId}&enablejsapi=1`}
-              allow="autoplay"
-            />
-          ) : (
-            <audio
-              ref={audioRef}
-              src={invite.musicUrl}
-              loop
-              autoPlay
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-            />
-          )}
+          <ReactPlayer
+            url={invite.musicUrl}
+            playing={isPlaying}
+            loop={true}
+            volume={0.5}
+            width="0"
+            height="0"
+            playsinline={true}
+            config={{
+              youtube: {
+                playerVars: { autoplay: 1, controls: 0 }
+              }
+            }}
+          />
         </div>
       )}
 
