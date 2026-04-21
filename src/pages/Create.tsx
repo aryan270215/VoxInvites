@@ -6,6 +6,41 @@ import { handleFirestoreError, OperationType } from '../utils/firestoreError';
 import { Plus, Trash2, Loader2, UploadCloud } from 'lucide-react';
 import { templates } from '../utils/demoData';
 
+const themeOptions = [
+  { value: 'modern', label: 'Modern', color: 'bg-stone-50 border-stone-300 text-stone-900' },
+  { value: 'royal', label: 'Royal', color: 'bg-amber-50 border-amber-300 text-amber-900' },
+  { value: 'minimal', label: 'Minimal', color: 'bg-slate-50 border-slate-300 text-slate-800' },
+  { value: 'botanical', label: 'Botanical', color: 'bg-green-50 border-green-300 text-green-900' },
+  { value: 'ocean', label: 'Ocean', color: 'bg-cyan-50 border-cyan-300 text-cyan-900' },
+  { value: 'midnight', label: 'Midnight', color: 'bg-slate-900 border-slate-600 text-white' },
+  { value: 'sunset', label: 'Sunset Glow', color: 'bg-gradient-to-br from-orange-50 to-rose-100 border-orange-200 text-orange-900' },
+  { value: 'glassmorphism', label: 'Glassmorphism', color: 'bg-gradient-to-br from-indigo-100 via-purple-50 to-teal-100 border-white/30 text-stone-800' },
+  { value: 'neon', label: 'Neon Nights', color: 'bg-gray-950 border-fuchsia-500/30 text-fuchsia-500' },
+  { value: 'vintage', label: 'Vintage Classic', color: 'bg-[#f4ebd0] border-[#deb887] text-[#4a3b32]' },
+  { value: 'elegant', label: 'Elegant Mono', color: 'bg-zinc-50 border-zinc-200 text-zinc-900' },
+  { value: 'cyberpunk', label: 'Cyberpunk', color: 'bg-zinc-950 border-cyan-500/30 text-cyan-400' },
+  { value: 'confetti', label: 'Confetti Pop', color: 'bg-pink-50 border-pink-200 text-purple-900' },
+  { value: 'corporate', label: 'Corporate Pro', color: 'bg-slate-50 border-slate-200 text-slate-900' },
+  { value: 'boho', label: 'Boho Chic', color: 'bg-[#fdfbf7] border-[#e8dcc7] text-[#5c4a3d]' },
+  { value: 'artdeco', label: 'Art Deco', color: 'bg-[#1a1a1a] border-[#d4af37] text-[#d4af37]' },
+  { value: 'watercolor', label: 'Watercolor', color: 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-purple-100 text-slate-700' },
+  { value: 'rustic', label: 'Rustic Charm', color: 'bg-[#f4f1ea] border-[#d1c7bd] text-[#4a4036]' },
+  { value: 'gothic', label: 'Dark Romance', color: 'bg-black border-red-900/50 text-gray-300' },
+  { value: 'tropical', label: 'Tropical', color: 'bg-emerald-50 border-emerald-200 text-emerald-900' },
+  { value: 'fairytale', label: 'Enchanted Fairytale', color: 'bg-indigo-50 border-indigo-100 text-indigo-900' },
+  { value: 'retro', label: 'Retro 70s/80s', color: 'bg-[#fdf6e3] border-[#cb4b16] text-[#cb4b16]' },
+  { value: 'luxury', label: 'Luxury Edition', color: 'bg-stone-950 border-yellow-600 text-yellow-500' },
+  { value: 'galaxy', label: 'Cosmic Galaxy', color: 'bg-[#0b0c10] border-purple-500/50 text-indigo-300' },
+  { value: 'autumn', label: 'Autumn Harvest', color: 'bg-orange-50 border-orange-800/30 text-amber-900' },
+  { value: 'winter', label: 'Winter Frost', color: 'bg-sky-50 border-sky-200 text-slate-700' },
+  { value: 'spring', label: 'Spring Blossom', color: 'bg-rose-50/50 border-rose-200 text-rose-800' },
+  { value: 'synthwave', label: 'Synthwave', color: 'bg-indigo-950 border-pink-500 text-cyan-400' },
+  { value: 'hacker', label: 'Terminal', color: 'bg-black border-green-500/50 text-green-500' },
+  { value: 'ethereal', label: 'Ethereal Dreams', color: 'bg-slate-50 border-slate-200 text-slate-500' },
+  { value: 'carnival', label: 'Carnival Fun', color: 'bg-yellow-50 border-red-500 text-red-700' },
+  { value: 'safari', label: 'Safari Explorer', color: 'bg-[#f4ebd0] border-[#556b2f] text-[#3e2723]' }
+];
+
 export default function Create() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -36,7 +71,6 @@ export default function Create() {
           mapUrl: demoData.mapUrl || '',
           theme: demoData.theme || 'modern',
           story: demoData.story || '',
-          musicUrl: demoData.musicUrl || '',
           pin: '',
           adminPin: '',
         };
@@ -55,7 +89,6 @@ export default function Create() {
       mapUrl: '',
       theme: searchParams.get('theme') || 'modern',
       story: '',
-      musicUrl: '',
       pin: '',
       adminPin: '',
     };
@@ -229,7 +262,6 @@ export default function Create() {
         mapUrl: formData.mapUrl,
         theme: formData.theme,
         story: formData.story,
-        musicUrl: formData.musicUrl,
         pin: formData.pin,
         adminPin: formData.adminPin,
         events: validEvents,
@@ -525,11 +557,6 @@ export default function Create() {
                 </div>
               </div>
             </div>
-
-            <div className="pt-2">
-              <label className="block text-sm font-medium text-stone-700 mb-1">Background Music URL (Optional)</label>
-              <input type="url" placeholder="https://..." className="w-full px-4 py-2 rounded-lg border border-stone-300 focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none" value={formData.musicUrl} onChange={e => setFormData({...formData, musicUrl: e.target.value})} />
-            </div>
             
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-2">Gallery Images</label>
@@ -580,31 +607,33 @@ export default function Create() {
                 <p className="text-xs text-stone-500 mt-1">Create a memorable link. Only lowercase letters, numbers, and hyphens allowed.</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">Theme *</label>
-                <select className="w-full px-4 py-2 rounded-lg border border-stone-300 focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none" value={formData.theme} onChange={e => setFormData({...formData, theme: e.target.value})}>
-                  <option value="modern">Modern</option>
-                  <option value="royal">Royal</option>
-                  <option value="minimal">Minimal</option>
-                  <option value="botanical">Botanical</option>
-                  <option value="ocean">Ocean</option>
-                  <option value="midnight">Midnight</option>
-                  <option value="sunset">Sunset Glow</option>
-                  <option value="glassmorphism">Glassmorphism</option>
-                  <option value="neon">Neon Nights</option>
-                  <option value="vintage">Vintage Classic</option>
-                  <option value="elegant">Elegant Monochrome</option>
-                  <option value="cyberpunk">Cyberpunk</option>
-                  <option value="confetti">Confetti Pop</option>
-                  <option value="corporate">Corporate Pro</option>
-                  <option value="boho">Boho Chic</option>
-                  <option value="artdeco">Art Deco / Gatsby</option>
-                  <option value="watercolor">Watercolor / Pastel</option>
-                  <option value="rustic">Rustic Charm</option>
-                  <option value="gothic">Dark Romance / Gothic</option>
-                  <option value="tropical">Tropical Vibes</option>
-                  <option value="fairytale">Enchanted Fairytale</option>
-                  <option value="retro">Retro 70s/80s</option>
-                </select>
+                <label className="block text-sm font-medium text-stone-700 mb-3">Theme *</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {themeOptions.map((theme) => (
+                    <div
+                      key={theme.value}
+                      onClick={() => setFormData({ ...formData, theme: theme.value })}
+                      className={`relative cursor-pointer rounded-xl border-2 transition-all overflow-hidden ${
+                        formData.theme === theme.value
+                          ? 'border-rose-500 shadow-md ring-2 ring-rose-200'
+                          : 'border-transparent hover:border-rose-300'
+                      }`}
+                    >
+                      <div className={`h-16 w-full ${theme.color} border-b-0 flex items-center justify-center`}>
+                        {formData.theme === theme.value && (
+                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-1 absolute top-2 right-2">
+                            <svg className="w-4 h-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div className="bg-white border-t border-stone-100 p-2 text-center">
+                        <span className="text-xs font-medium text-stone-700 line-clamp-1">{theme.label}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-stone-700 mb-1">Guest PIN (Optional)</label>

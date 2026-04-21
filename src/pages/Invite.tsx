@@ -8,7 +8,6 @@ import { format, differenceInDays } from 'date-fns';
 import { handleFirestoreError, OperationType } from '../utils/firestoreError';
 import AdBanner from '../components/AdBanner';
 import { templates } from '../utils/demoData';
-import ReactPlayer from 'react-player';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -27,7 +26,6 @@ export default function Invite() {
   const [pinError, setPinError] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
   const [galleryUnlocked, setGalleryUnlocked] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false); // Default to false, will play on open
   const [isExpired, setIsExpired] = useState(false);
 
   // RSVP State
@@ -136,10 +134,6 @@ export default function Invite() {
     }
   };
 
-  const toggleMusic = () => {
-    setIsPlaying(!isPlaying);
-  };
-
   const handleRsvpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
@@ -226,9 +220,6 @@ export default function Invite() {
 
   const handleOpen = () => {
     setIsOpened(true);
-    if (invite.musicUrl) {
-      setIsPlaying(true);
-    }
   };
 
   // Theme classes
@@ -254,7 +245,17 @@ export default function Invite() {
     gothic: { bg: 'bg-black', text: 'text-gray-300', accent: 'text-red-800', card: 'bg-zinc-900 border border-red-900/50 shadow-2xl', font: 'font-serif', button: 'bg-red-900 hover:bg-red-800 text-gray-200', border: 'border-red-900/50' },
     tropical: { bg: 'bg-emerald-50', text: 'text-emerald-900', accent: 'text-pink-500', card: 'bg-white border border-emerald-200 shadow-xl', font: 'font-sans', button: 'bg-pink-500 hover:bg-pink-600 text-white', border: 'border-emerald-200' },
     fairytale: { bg: 'bg-indigo-50', text: 'text-indigo-900', accent: 'text-purple-500', card: 'bg-white/80 border border-indigo-100 shadow-xl rounded-3xl', font: 'font-serif', button: 'bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-200', border: 'border-indigo-100' },
-    retro: { bg: 'bg-[#fdf6e3]', text: 'text-[#cb4b16]', accent: 'text-[#2aa198]', card: 'bg-[#eee8d5] border-4 border-[#cb4b16] shadow-[8px_8px_0px_0px_rgba(203,75,22,1)]', font: 'font-mono', button: 'bg-[#2aa198] hover:bg-[#268bd2] text-[#fdf6e3] font-bold border-2 border-[#2aa198]', border: 'border-[#cb4b16]' }
+    retro: { bg: 'bg-[#fdf6e3]', text: 'text-[#cb4b16]', accent: 'text-[#2aa198]', card: 'bg-[#eee8d5] border-4 border-[#cb4b16] shadow-[8px_8px_0px_0px_rgba(203,75,22,1)]', font: 'font-mono', button: 'bg-[#2aa198] hover:bg-[#268bd2] text-[#fdf6e3] font-bold border-2 border-[#2aa198]', border: 'border-[#cb4b16]' },
+    luxury: { bg: 'bg-stone-950', text: 'text-yellow-500', accent: 'text-yellow-600', card: 'bg-stone-900 border border-yellow-600/30 shadow-xl rounded-none', font: 'font-serif tracking-wide', button: 'bg-yellow-600 hover:bg-yellow-500 text-stone-950 font-medium rounded-none', border: 'border-yellow-600/30' },
+    galaxy: { bg: 'bg-[#0b0c10] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#0b0c10] to-[#0b0c10]', text: 'text-indigo-100', accent: 'text-fuchsia-400', card: 'bg-[#1f2833]/80 backdrop-blur-sm border border-fuchsia-500/20 shadow-[0_0_30px_rgba(192,38,211,0.1)]', font: 'font-sans', button: 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-500 hover:to-fuchsia-500 text-white', border: 'border-fuchsia-500/20' },
+    autumn: { bg: 'bg-[#fdf6e3]', text: 'text-[#5c4a3d]', accent: 'text-[#d97736]', card: 'bg-white border-2 border-[#d97736]/20 shadow-md', font: 'font-serif', button: 'bg-[#d97736] hover:bg-[#c96625] text-white', border: 'border-[#d97736]/30' },
+    winter: { bg: 'bg-sky-50', text: 'text-slate-700', accent: 'text-sky-500', card: 'bg-white/80 backdrop-blur-md border border-sky-200 shadow-xl', font: 'font-sans font-light', button: 'bg-sky-500 hover:bg-sky-400 text-white shadow-md shadow-sky-200', border: 'border-sky-200' },
+    spring: { bg: 'bg-[#fff5f8]', text: 'text-[#704d55]', accent: 'text-[#e88195]', card: 'bg-white border border-[#f8d0d8] shadow-sm', font: 'font-sans font-medium', button: 'bg-[#e88195] hover:bg-[#d66f83] text-white', border: 'border-[#f8d0d8]' },
+    synthwave: { bg: 'bg-indigo-950', text: 'text-pink-400', accent: 'text-cyan-400', card: 'bg-indigo-900/80 backdrop-blur-none border-b-4 border-r-4 border-pink-500 shadow-[8px_8px_0_rgba(6,182,212,0.5)] rounded-none', font: 'font-mono uppercase tracking-wider', button: 'bg-pink-600 hover:bg-pink-500 text-white border-2 border-cyan-400 rounded-none', border: 'border-pink-500' },
+    hacker: { bg: 'bg-black', text: 'text-green-500', accent: 'text-green-400', card: 'bg-black border border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)] rounded-none', font: 'font-mono text-sm tracking-tight', button: 'bg-green-900/30 hover:bg-green-900/50 border border-green-500 text-green-400 rounded-none', border: 'border-green-500/50' },
+    ethereal: { bg: 'bg-slate-50', text: 'text-slate-500', accent: 'text-slate-800', card: 'bg-white/40 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]', font: 'font-sans font-thin tracking-widest uppercase', button: 'bg-slate-800 hover:bg-slate-900 text-white font-light tracking-widest uppercase', border: 'border-slate-200' },
+    carnival: { bg: 'bg-yellow-50', text: 'text-red-900', accent: 'text-red-600', card: 'bg-white border-4 border-red-500 shadow-xl rounded-2xl', font: 'font-sans font-black', button: 'bg-red-600 hover:bg-red-500 text-white rounded-full shadow-[0_4px_0_rgb(185,28,28)]', border: 'border-red-500' },
+    safari: { bg: 'bg-[#f4ebd0]', text: 'text-[#3e2723]', accent: 'text-[#556b2f]', card: 'bg-[#fffdf5] border-2 border-[#556b2f]/30 shadow-lg', font: 'font-serif font-bold', button: 'bg-[#556b2f] hover:bg-[#435525] text-[#f4ebd0]', border: 'border-[#556b2f]/30' }
   };
   const themeStyles = themeStylesMap[invite.theme as keyof typeof themeStylesMap] || themeStylesMap.modern;
 
@@ -391,11 +392,6 @@ export default function Invite() {
         <Link to={`/invite/${id}/admin`} className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
           <Settings className="text-stone-400" />
         </Link>
-        {invite.musicUrl && (
-          <button onClick={toggleMusic} className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
-            {isPlaying ? <Music className={themeStyles.accent} /> : <Music2 className="text-stone-400" />}
-          </button>
-        )}
         <button onClick={shareOnWhatsApp} className="w-12 h-12 bg-[#25D366] text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
           <WhatsAppIcon className="w-6 h-6" />
         </button>
@@ -403,26 +399,6 @@ export default function Invite() {
           <Share2 className={themeStyles.accent} />
         </button>
       </div>
-
-      {/* Hidden Audio Player */}
-      {invite.musicUrl && (
-        <div className="hidden">
-          <ReactPlayer
-            url={invite.musicUrl}
-            playing={isPlaying}
-            loop={true}
-            volume={0.5}
-            width="0"
-            height="0"
-            playsinline={true}
-            config={{
-              youtube: {
-                playerVars: { autoplay: 1, controls: 0 }
-              }
-            }}
-          />
-        </div>
-      )}
 
       {/* Hero */}
       <AdBanner format="appOpen" />

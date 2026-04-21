@@ -83,13 +83,13 @@ export default function Landing() {
   const opacityFade = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-stone-50 overflow-hidden" ref={containerRef}>
+    <div className="min-h-[calc(100vh-4rem)] bg-[#fdfbf7] overflow-hidden text-stone-900" ref={containerRef}>
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]">
         <motion.div style={{ y: yBg, opacity: opacityFade }} className="absolute inset-0 z-0 pointer-events-none">
-          <motion.div animate={{ y: [0, -30, 0], rotate: [0, 5, 0], scale: [1, 1.05, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] bg-rose-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-70" />
-          <motion.div animate={{ y: [0, 30, 0], rotate: [0, -5, 0], scale: [1, 1.1, 1] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] right-[10%] w-[400px] h-[400px] bg-amber-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-70" />
-          <motion.div animate={{ scale: [1, 1.2, 1], x: [0, 40, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-pink-200/40 rounded-full mix-blend-multiply filter blur-[100px] opacity-70" />
+          <motion.div animate={{ y: [0, -30, 0], rotate: [0, 5, 0], scale: [1, 1.05, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] bg-rose-200/40 rounded-full mix-blend-multiply filter blur-[80px] opacity-70" />
+          <motion.div animate={{ y: [0, 30, 0], rotate: [0, -5, 0], scale: [1, 1.1, 1] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] right-[10%] w-[400px] h-[400px] bg-amber-100/60 rounded-full mix-blend-multiply filter blur-[80px] opacity-70" />
+          <motion.div animate={{ scale: [1, 1.2, 1], x: [0, 40, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-pink-100/50 rounded-full mix-blend-multiply filter blur-[100px] opacity-70" />
         </motion.div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
@@ -97,7 +97,7 @@ export default function Landing() {
             initial={{ opacity: 0, scale: 0.9 }} 
             animate={{ opacity: 1, scale: 1 }} 
             transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-md border border-stone-200 text-sm font-medium text-stone-600 mb-10 shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-rose-50 border border-rose-100 text-sm font-medium text-rose-800 mb-10 shadow-[0_0_20px_rgba(244,63,94,0.1)]"
           >
             <motion.div
               animate={{ rotate: [0, 15, -15, 0] }}
@@ -105,7 +105,7 @@ export default function Landing() {
             >
               <Sparkles className="w-4 h-4 text-rose-500" />
             </motion.div>
-            <span>The new standard for event invitations</span>
+            <span className="tracking-wide">✨ Save up to ₹10,000+ on printing & postage</span>
           </motion.div>
           
           <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-serif font-bold text-stone-900 mb-8 leading-[1.1] tracking-tight relative perspective-[1000px]">
@@ -132,7 +132,7 @@ export default function Landing() {
           >
             <Link
               to="/create"
-              className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-stone-900 rounded-full hover:bg-stone-800 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+              className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-rose-600 rounded-full hover:bg-rose-700 transition-all shadow-[0_0_20px_rgba(244,63,94,0.3)] hover:shadow-[0_0_30px_rgba(244,63,94,0.4)] hover:-translate-y-1"
             >
               <span className="relative z-10 flex items-center">
                 Create Invitation
@@ -142,7 +142,7 @@ export default function Landing() {
             </Link>
             <Link
               to="/templates"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-stone-900 bg-white border border-stone-200 rounded-full hover:bg-stone-50 transition-all hover:shadow-md hover:-translate-y-1"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-stone-700 bg-white border border-stone-200 shadow-sm rounded-full hover:bg-stone-50 transition-all hover:shadow-md hover:-translate-y-1"
             >
               View Demos
             </Link>
@@ -170,7 +170,7 @@ export default function Landing() {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
-              className="md:col-span-2 bg-stone-50 rounded-[2rem] p-8 border border-stone-100 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500"
+              className="md:col-span-2 bg-[#fffcf9] rounded-[2rem] p-8 border border-orange-100/50 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500"
             >
               <motion.div 
                 animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }}
@@ -181,7 +181,7 @@ export default function Landing() {
                 <Heart className="w-12 h-12 text-rose-500 mb-6 drop-shadow-md" />
                 <div>
                   <h3 className="text-3xl lg:text-4xl font-serif font-bold text-stone-900 mb-4">Beautiful Themes</h3>
-                  <p className="text-lg text-stone-600 max-w-md leading-relaxed">Choose from 13+ carefully crafted themes like Cyberpunk, Confetti, and Glassmorphism. Each designed to perfectly match your event's unique aesthetic.</p>
+                  <p className="text-lg text-stone-600 max-w-md leading-relaxed">Choose from 25+ carefully crafted themes like Botanical, Elegant, and Classic. Each designed to perfectly match your event's unique aesthetic.</p>
                 </div>
               </div>
             </motion.div>
@@ -193,14 +193,14 @@ export default function Landing() {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
-              className="bg-stone-900 rounded-[2rem] p-8 text-white relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-500"
+              className="bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-100 rounded-[2rem] p-8 text-stone-900 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-stone-800 to-stone-950 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-100/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative z-10 flex flex-col h-full justify-between">
-                <ShieldCheck className="w-12 h-12 text-rose-400 mb-6 drop-shadow-md" />
+                <ShieldCheck className="w-12 h-12 text-rose-500 mb-6 drop-shadow-md" />
                 <div>
-                  <h3 className="text-2xl font-serif font-bold mb-3">Secure RSVPs</h3>
-                  <p className="text-stone-400 leading-relaxed">Protect your invite with a PIN and manage guest responses seamlessly.</p>
+                  <h3 className="text-2xl font-serif font-bold mb-3 text-stone-900">Secure RSVPs</h3>
+                  <p className="text-stone-600 leading-relaxed">Protect your invite with a PIN and manage guest responses seamlessly.</p>
                 </div>
               </div>
             </motion.div>
@@ -212,18 +212,18 @@ export default function Landing() {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
-              className="bg-amber-50 rounded-[2rem] p-8 border border-amber-100 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500"
+              className="bg-[#f0f4f1] rounded-[2rem] p-8 border border-emerald-100 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500"
             >
               <motion.div 
                 animate={{ scale: [1, 1.2, 1] }} 
                 transition={{ duration: 8, repeat: Infinity }}
-                className="absolute inset-0 bg-gradient-to-tr from-amber-100/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" 
+                className="absolute inset-0 bg-gradient-to-tr from-emerald-100/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" 
               />
               <div className="relative z-10 flex flex-col h-full justify-between">
-                <MapPin className="w-12 h-12 text-amber-600 mb-6 drop-shadow-md" />
+                <MapPin className="w-12 h-12 text-emerald-600 mb-6 drop-shadow-md" />
                 <div>
-                  <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Interactive Maps</h3>
-                  <p className="text-stone-600 leading-relaxed">Integrated Google Maps to help your guests easily find your perfect venue.</p>
+                  <h3 className="text-2xl font-serif font-bold text-emerald-950 mb-3">Interactive Maps</h3>
+                  <p className="text-emerald-800/80 leading-relaxed">Integrated Google Maps to help your guests easily find your perfect venue.</p>
                 </div>
               </div>
             </motion.div>
@@ -235,20 +235,20 @@ export default function Landing() {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
-              className="md:col-span-2 bg-stone-50 rounded-[2rem] p-8 border border-stone-100 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-end"
+              className="md:col-span-2 bg-[#fffdfa] rounded-[2rem] p-8 border border-amber-100/50 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-end"
             >
               <motion.div 
                 animate={{ x: [0, 10, 0], y: [0, -10, 0] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-10 right-10 flex gap-6 opacity-30 group-hover:opacity-100 transition-opacity duration-500"
+                className="absolute top-10 right-10 flex gap-6 opacity-40 group-hover:opacity-100 transition-opacity duration-500"
               >
-                <Music className="w-12 h-12 text-indigo-400 -rotate-12" />
-                <ImageIcon className="w-12 h-12 text-rose-400 rotate-6" />
-                <Clock className="w-12 h-12 text-amber-400 -rotate-6" />
+                <ImageIcon className="w-12 h-12 text-rose-400 -rotate-12" />
+                <Music className="w-12 h-12 text-amber-500 rotate-6" />
+                <Clock className="w-12 h-12 text-emerald-400 -rotate-6" />
               </motion.div>
               <div className="relative z-10 mt-20">
                 <h3 className="text-3xl lg:text-4xl font-serif font-bold text-stone-900 mb-4">Rich Media Experience</h3>
-                <p className="text-lg text-stone-600 max-w-md leading-relaxed">Add background music from YouTube, create a stunning photo gallery, and showcase your elaborate event timeline.</p>
+                <p className="text-lg text-stone-600 max-w-md leading-relaxed">Create a stunning photo gallery and showcase your elaborate event timeline natively inside the beautiful UI.</p>
               </div>
             </motion.div>
           </div>
@@ -256,12 +256,12 @@ export default function Landing() {
       </section>
 
       {/* Eco-Friendly Mission Section */}
-      <section className="py-32 bg-emerald-950 text-emerald-50 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
+      <section className="py-32 bg-[#ebf0ec] text-emerald-950 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-40">
           <motion.div 
             animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }} 
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500 rounded-full mix-blend-screen filter blur-[120px]" 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-200/50 rounded-full mix-blend-multiply filter blur-[120px]" 
           />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -277,15 +277,15 @@ export default function Landing() {
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="inline-block mb-8"
             >
-              <div className="w-24 h-24 bg-emerald-900/50 rounded-full border border-emerald-800 flex items-center justify-center backdrop-blur-md shadow-lg">
-                <Leaf className="w-12 h-12 text-emerald-400" />
+              <div className="w-24 h-24 bg-white border border-emerald-100 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+                <Leaf className="w-12 h-12 text-emerald-500" />
               </div>
             </motion.div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 tracking-tight">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 tracking-tight text-emerald-950">
               <AnimatedWords text="Join Our Green Mission" />
             </h2>
-            <p className="text-xl text-emerald-200/80 font-light leading-relaxed">
-              Traditional paper invitations produce thousands of pounds of waste every year. By choosing Vox Invites, you're not just creating a stunning digital experience—you're actively saving trees and protecting our planet.
+            <p className="text-xl text-emerald-800/80 font-light leading-relaxed">
+              Traditional paper invitations produce thousands of pounds of waste every year. By choosing Vox Invites, you're not just saving up to ₹10,000+—you're actively saving trees and protecting our planet.
             </p>
           </motion.div>
 
@@ -302,14 +302,11 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: item.delay, type: "spring", stiffness: 100 }}
-                className="bg-emerald-900/40 backdrop-blur-md p-8 rounded-[2rem] border border-emerald-800/50 text-center shadow-xl relative overflow-hidden group"
+                className="bg-white/60 backdrop-blur-md p-8 rounded-[2rem] border border-emerald-100 text-center shadow-lg relative overflow-hidden group hover:border-emerald-200"
               >
-                <motion.div 
-                  className="absolute inset-0 bg-emerald-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
-                />
-                <item.icon className="w-12 h-12 text-emerald-400 mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-300" />
-                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                <p className="text-emerald-200/80 leading-relaxed font-light">{item.desc}</p>
+                <item.icon className="w-12 h-12 text-emerald-500 mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-300" />
+                <h3 className="text-2xl font-bold mb-4 text-emerald-950">{item.title}</h3>
+                <p className="text-emerald-800/80 leading-relaxed font-light">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -317,13 +314,13 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-40 bg-stone-900 text-white relative overflow-hidden">
+      <section className="py-40 bg-rose-950 text-white relative overflow-hidden">
         <motion.div 
           animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute inset-0 z-0"
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-rose-500 rounded-full mix-blend-screen filter blur-[150px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-rose-500/20 rounded-full mix-blend-screen filter blur-[150px]" />
         </motion.div>
         
         <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
@@ -334,16 +331,16 @@ export default function Landing() {
             transition={{ type: "spring", stiffness: 80, damping: 20 }}
             className="text-5xl md:text-7xl font-serif font-bold mb-8 tracking-tight leading-tight"
           >
-             <AnimatedWords text="Ready to create your invite?" />
+             <AnimatedWords text="Ready to craft your invite?" />
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-2xl text-stone-300 mb-14 font-light max-w-2xl mx-auto"
+            className="text-2xl text-rose-100 mb-14 font-light max-w-2xl mx-auto"
           >
-            Join thousands of hosts who have shared their special day with Vox Invites.
+            Join thousands of hosts who have saved time, money, and trees by sharing their special day beautifully.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -353,10 +350,10 @@ export default function Landing() {
           >
             <Link
               to="/create"
-              className="group relative inline-flex items-center justify-center px-10 py-5 text-xl font-medium text-stone-900 bg-white rounded-full hover:bg-stone-50 transition-all hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] overflow-hidden"
+              className="group relative inline-flex items-center justify-center px-10 py-5 text-xl font-medium text-rose-950 bg-white rounded-full hover:bg-stone-50 transition-all hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.3)] overflow-hidden"
             >
               <motion.div 
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-[200%]"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-rose-100/50 to-transparent -translate-x-[200%]"
                 animate={{ translateX: ["-200%", "200%"] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
               />

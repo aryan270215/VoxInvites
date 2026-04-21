@@ -23,6 +23,12 @@ export default function Admin() {
     nativeAdvanced: '',
     appOpen: ''
   });
+  const [fallbackAd, setFallbackAd] = useState({
+    imageUrl: '',
+    linkUrl: '',
+    title: '',
+    description: ''
+  });
   const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
@@ -50,6 +56,7 @@ export default function Admin() {
             const data = settingsSnap.data();
             if (data.headCode) setHeadCode(data.headCode);
             if (data.adCodes) setAdCodes(data.adCodes);
+            if (data.fallbackAd) setFallbackAd(data.fallbackAd);
           }
         } catch (settingsError) {
           console.warn("Could not fetch global settings block. It might be due to offline mode or network issues.", settingsError);
@@ -66,7 +73,7 @@ export default function Admin() {
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     try {
-      await setDoc(doc(db, 'settings', 'global'), { headCode, adCodes }, { merge: true });
+      await setDoc(doc(db, 'settings', 'global'), { headCode, adCodes, fallbackAd }, { merge: true });
       alert('Global settings saved successfully.');
     } catch (error) {
       console.error('Error saving global settings:', error);
@@ -279,6 +286,74 @@ export default function Admin() {
               placeholder="<!-- Paste App Open Ad Code -->"
               className="w-full h-24 p-4 font-mono text-xs bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
             />
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleSaveSettings}
+            disabled={savingSettings}
+            className="px-6 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 disabled:opacity-50 transition-colors"
+          >
+            {savingSettings ? 'Saving...' : 'Save Settings'}
+          </button>
+        </div>
+      </div>
+
+      {/* Fallback / Native Ads (Anti-Adblock) */}
+      <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-8 mt-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+            <ExternalLink className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold font-serif text-stone-900">Anti-AdBlock Native Ad</h2>
+            <p className="text-sm text-stone-500">If a user has an ad blocker, display this native self-hosted ad instead.</p>
+          </div>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Ad Image URL</label>
+            <input
+              type="text"
+              value={fallbackAd.imageUrl}
+              onChange={(e) => setFallbackAd({...fallbackAd, imageUrl: e.target.value})}
+              placeholder="https://example.com/promo-image.png"
+              className="w-full px-4 py-2 bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">Destination URL</label>
+            <input
+              type="text"
+              value={fallbackAd.linkUrl}
+              onChange={(e) => setFallbackAd({...fallbackAd, linkUrl: e.target.value})}
+              placeholder="https://your-sponsor.com"
+              className="w-full px-4 py-2 bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">Headline (Optional)</label>
+              <input
+                type="text"
+                value={fallbackAd.title}
+                onChange={(e) => setFallbackAd({...fallbackAd, title: e.target.value})}
+                placeholder="Special Offer!"
+                className="w-full px-4 py-2 bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">Description (Optional)</label>
+              <input
+                type="text"
+                value={fallbackAd.description}
+                onChange={(e) => setFallbackAd({...fallbackAd, description: e.target.value})}
+                placeholder="Click here for 20% off"
+                className="w-full px-4 py-2 bg-stone-50 border border-stone-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+              />
+            </div>
           </div>
         </div>
 
